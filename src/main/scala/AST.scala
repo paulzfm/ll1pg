@@ -4,160 +4,120 @@
   * Context Free Grammar (CFG).
   */
 
-import JavaStmtAST.JavaStmt
+import scala.util.parsing.input.Positional
 
 object AST {
 
-  /**
-    * Headers definition.
-    *
-    * @param package Java file package.
-    * @param imports Java file imports.
-    * @param class   Java class.
-    * @param tokens  CFG tokens (terminals).
-    * @param start   CFG start symbol.
-    */
-  type Headers = (Option[Package], Imports, Class, List[Token], Start)
+  abstract class Node extends Positional with Printable
 
-  /**
-    * The CFG file AST.
-    *
-    * @param headers headers.
-    * @param rules   CFG rules.
-    */
-  case class Syntax(headers: Headers, rules: List[Rule]) {
-    val (pkg, imports, cls, tokens, start) = headers
+  case class Ident(symbol: String) extends Node {
+    override def printTo(writer: IndentWriter): Unit = writer.write(symbol)
+  }
 
-    def writeTo(writer: IndentWriter): Unit = {
-      // package
-      pkg match {
-        case Some(p) =>
-          p.writeTo(writer)
-          writer.next()
-        case None =>
-      }
+  case class Const(symbol: Char) extends Node {
+    override def printTo(writer: IndentWriter): Unit = writer.write(symbol.toString)
+  }
 
-      // imports
-      imports.writeTo(writer)
-      writer.next()
+  case class JavaCode(source: String) extends Node {
+    override def printTo(writer: IndentWriter): Unit = writer.writeLn(source.trim)
+  }
 
-      // class begin
-      cls.writeTo(writer)
-      writer.writeLn("{")
-      writer.incIndent()
-
-      // class body
-
-      // class end
-      writer.decIndent()
-      writer.writeLn("}")
+  case class Spec(headers: List[Header], rules: List[Rule]) extends Node {
+    override def printTo(writer: IndentWriter): Unit = {
+      headers.foreach(_.printTo(writer))
+      rules.foreach(_.printTo(writer))
     }
   }
 
-  /**
-    * Package of the parser class.
-    *
-    * @param name package name.
-    */
-  case class Package(name: String) {
-    def writeTo(writer: IndentWriter): Unit = writer.writeLn(s"package $name;")
+  abstract class Header extends Node
+
+  case class Package(name: Ident) extends Header {
+    override def printTo(writer: IndentWriter): Unit = {
+      writer.write("package ")
+      name.printTo(writer)
+      writer.writeLn(";")
+    }
   }
 
-  /**
-    * Dependencies of the parser class.
-    *
-    * @param dependencies dependent classes.
-    */
-  case class Imports(dependencies: List[String] = Nil) {
-    def writeTo(writer: IndentWriter): Unit =
-      dependencies.map("import " + _ + ";").foreach(writer.writeLn)
+  case class Imports(classes: List[Ident]) extends Header {
+    override def printTo(writer: IndentWriter): Unit = classes.foreach {
+      cls =>
+        writer.write("import ")
+        cls.printTo(writer)
+        writer.writeLn(";")
+    }
   }
 
-  /**
-    * Parser class.
-    *
-    * @param name   class name.
-    * @param extend class extending (can be `None`).
-    */
-  case class Class(name: String, extend: Option[String]) {
-    def writeTo(writer: IndentWriter): Unit = writer.write(s"public class $name${
-      extend match {
-        case Some(c) => s" extends $c"
-        case None => ""
+  case class Class(name: Ident, superClass: Option[Ident] = None,
+                   implements: Option[List[Ident]] = None) extends Header {
+    override def printTo(writer: IndentWriter): Unit = {
+      writer.write("class ")
+      name.printTo(writer)
+      superClass match {
+        case Some(cls) =>
+          writer.write(" extends ")
+          cls.printTo(writer)
+        case None =>
       }
-    }")
+      implements match {
+        case Some(is) =>
+          writer.write(" implements ")
+          printSep(writer, "", "")(is)
+        case None =>
+      }
+      writer.writeLn(";")
+    }
+  }
+
+  case class Tokens(tokens: List[Token]) extends Header {
+    override def printTo(writer: IndentWriter): Unit = {
+      writer.writeLn("tokens = [")
+      writer.incIndent()
+      val front :+ end = tokens
+      front.foreach {
+        t =>
+          t.printTo(writer)
+          writer.writeLn(",")
+      }
+      end.printTo(writer)
+      writer.writeLn()
+      writer.decIndent()
+      writer.writeLn("];")
+    }
   }
 
   /**
     * Lexer token.
     */
-  abstract class Token {
-    def writeTo(writer: IndentWriter): Unit
-  }
+  abstract class Token extends Node
 
   /**
     * Token declared by an identifier.
     *
-    * @param token the identifier.
+    * @param ident the identifier.
     */
-  case class Ident(token: String) extends Token {
-    override def writeTo(writer: IndentWriter): Unit = writer.write(token)
-
-    override def toString: String = token
+  case class IdentToken(ident: Ident) extends Token {
+    def printTo(writer: IndentWriter): Unit = ident.printTo(writer)
   }
+
+  def IdentToken(ident: String): IdentToken = IdentToken(Ident(ident))
 
   /**
     * Token declared by a single character (operator).
     *
-    * @param token the character.
+    * @param const the character.
     */
-  case class Op(token: Char) extends Token {
-    override def writeTo(writer: IndentWriter): Unit = writer.write(s"'$token'")
-
-    override def toString: String = s"'$token'"
+  case class ConstToken(const: Const) extends Token {
+    def printTo(writer: IndentWriter): Unit = const.printTo(writer)
   }
 
-  /**
-    * Start symbol of CFG.
-    *
-    * @param symbol start non-terminal.
-    */
-  case class Start(symbol: NonTerminal)
+  def ConstToken(const: Char): Token = ConstToken(Const(const))
 
-  /**
-    * Term of CFG rule.
-    */
-  abstract class Term {
-    def writeNameTo(writer: IndentWriter): Unit
-
-    def writeMatcherTo(writer: IndentWriter): Unit
-  }
-
-  /**
-    * Terminal token.
-    *
-    * @param term the token.
-    */
-  case class Terminal(term: Token) extends Term {
-    override def writeNameTo(writer: IndentWriter): Unit = term.writeTo(writer)
-
-    override def writeMatcherTo(writer: IndentWriter): Unit = {
-      writer.write(s"matchToken(")
-      term.writeTo(writer)
-      writer.write(")")
-    }
-  }
-
-  /**
-    * Non-terminal symbol.
-    *
-    * @param term the symbol name.
-    */
-  case class NonTerminal(term: String) extends Term {
-    override def writeNameTo(writer: IndentWriter): Unit = writer.write(term)
-
-    override def writeMatcherTo(writer: IndentWriter): Unit = {
-      writer.write(s"parse$term()")
+  case class Start(symbol: NonTerminal) extends Header {
+    def printTo(writer: IndentWriter): Unit = {
+      writer.write("start = ")
+      symbol.printTo(writer)
+      writer.writeLn(";")
     }
   }
 
@@ -167,50 +127,47 @@ object AST {
     * @param left   left non-terminal.
     * @param rights right terms with action (in format of Java code).
     */
-  case class Rule(left: NonTerminal, rights: List[(List[Term], List[String])]) {
-    def writeTo(writer: IndentWriter): Unit = {
-      // method begins
-      writer.write("private SemValue ")
-      left.writeMatcherTo(writer)
-      writer.writeLn("{")
+  case class Rule(left: NonTerminal, rights: List[(List[Term], JavaCode)]) extends Node {
+    def printTo(writer: IndentWriter): Unit = {
+      left.printTo(writer)
+      writer.writeLn(":")
       writer.incIndent()
-
-      // method body
-      if (rights.length == 1) {
-        writeBodyTo(writer, rights.head)
-      } else {
-        writer.write("switch(lookahead) {")
-        writer.incIndent()
-        rights.foreach {
-          xs =>
-            writer.writeLn("case ???: {")
-            writer.incIndent()
-            writeBodyTo(writer, xs)
-            writer.decIndent()
-            writer.writeLn("}")
-        }
-        writer.decIndent()
-        writer.write("}")
+      rights.foreach {
+        case (ts, code) =>
+          if (ts.isEmpty) writer.write("/* empty */")
+          else printSep(writer, "", "", " ")(ts)
+          writer.writeLn(" {")
+          writer.incIndent()
+          code.printTo(writer)
+          writer.decIndent()
+          writer.writeLn("}")
       }
-
-      // method ends
       writer.decIndent()
-      writer.writeLn("}")
-    }
-
-    def writeBodyTo(writer: IndentWriter, right: (List[Term], List[JavaStmt])): Unit = {
-      val (terms, actions) = right
-      writer.writeLn(s"SemValue[] params = new SemValue[${terms.length + 1}];")
-      terms.zipWithIndex.foreach {
-        case (t, i) =>
-          writer.write(s"params[$i] = ")
-          t.writeMatcherTo(writer)
-          writer.writeLn(";")
-      }
-
-      actions.map(_.toJavaCode).foreach(writer.writeLn)
-      writer.writeLn("return params[0];")
     }
   }
 
+  /**
+    * Term of CFG rule.
+    */
+  abstract class Term extends Node
+
+  /**
+    * Terminal token.
+    *
+    * @param token the token.
+    */
+  case class Terminal(token: Token) extends Term {
+    override def printTo(writer: IndentWriter): Unit = token.printTo(writer)
+  }
+
+  /**
+    * Non-terminal symbol.
+    *
+    * @param symbol the symbol name.
+    */
+  case class NonTerminal(symbol: Ident) extends Term {
+    override def printTo(writer: IndentWriter): Unit = symbol.printTo(writer)
+  }
+
+  def NonTerminal(symbol: String): Term = NonTerminal(Ident(symbol))
 }

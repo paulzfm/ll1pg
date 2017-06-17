@@ -11,15 +11,15 @@ class IndentWriter(val indent: Int = 4) {
   private val endOfLine: String = "\n"
 
   private def printIndentsIfNewLine(): Unit =
-    if (newLine) buffer += ' ' * indent * currentLevel
+    if (newLine) buffer += " " * indent * currentLevel
 
-  def write(code: String): Unit = {
+  def write(code: String = ""): Unit = {
     printIndentsIfNewLine()
     buffer += code
     newLine = false
   }
 
-  def writeLn(line: String): Unit = {
+  def writeLn(line: String = ""): Unit = {
     write(line)
     buffer += endOfLine
     newLine = true
