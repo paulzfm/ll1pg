@@ -48,6 +48,14 @@ object AST {
     }
   }
 
+  case class SemValue(name: Ident) extends Header {
+    override def printTo(writer: IndentWriter): Unit = {
+      writer.write("sem ")
+      name.printTo(writer)
+      writer.writeLn(";")
+    }
+  }
+
   case class Class(name: Ident, superClass: Option[Ident] = None,
                    implements: Option[List[Ident]] = None) extends Header {
     override def printTo(writer: IndentWriter): Unit = {

@@ -30,8 +30,8 @@ class IndentWriter(val indent: Int = 4) {
   def decIndent(level: Int = 1): Unit = if (currentLevel > 0) currentLevel -= 1
 
   def next(): Unit = {
-    if (!newLine) writeLn("")
-    writeLn("")
+    if (!newLine) writeLn()
+    writeLn()
   }
 
   def printToConsole(): Unit = print(buffer)

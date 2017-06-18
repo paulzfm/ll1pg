@@ -61,6 +61,8 @@ object Parsers {
 
     def imports: Parser[Imports] = "%import" ~> pkgName.* ^^ Imports
 
+    def semValue: Parser[SemValue] = "%sem" ~> ident ^^ SemValue
+
     def cls: Parser[Class] =
       "%class" ~> ident ~ ("extends" ~> ident).? ~ ("implements" ~> ident.+).? ^^ {
         case c ~ e ~ is => Class(c, e, is)
@@ -70,7 +72,7 @@ object Parsers {
 
     def tokens: Parser[Tokens] = "%tokens" ~> token.* ^^ Tokens
 
-    def header: Parser[Header] = pkg | imports | cls | start | tokens
+    def header: Parser[Header] = pkg | imports | semValue | cls | start | tokens
 
     def headers: Parser[List[Header]] = header.*
   }

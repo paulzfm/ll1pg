@@ -41,6 +41,11 @@ class TestParsers extends FunSuite {
     )
   }
 
+  test("parse semValue: %sem SemValue") {
+    val p = new Parsers.HeaderParsers
+    assert(p.parseAll(p.semValue, "%sem SemValue").get == SemValue(Ident("SemValue")))
+  }
+
   test("parse class: %class Parser") {
     val p = new Parsers.HeaderParsers
     assert(p.parseAll(p.cls, "%class Parser").get == Class(Ident("Parser")))
