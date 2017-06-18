@@ -180,7 +180,9 @@ object AST {
   /**
     * Term of CFG rule.
     */
-  abstract class Term extends Node
+  abstract class Term extends Node {
+    def nonTerminal: Boolean
+  }
 
   /**
     * Terminal token.
@@ -188,6 +190,8 @@ object AST {
     * @param token the token.
     */
   case class Terminal(token: Token) extends Term {
+    override def nonTerminal: Boolean = false
+
     override def printTo(writer: IndentWriter): Unit = token.printTo(writer)
 
     override def toString: String = token.toString
@@ -199,6 +203,8 @@ object AST {
     * @param symbol the symbol name.
     */
   case class NonTerminal(symbol: Ident) extends Term {
+    override def nonTerminal: Boolean = true
+
     override def printTo(writer: IndentWriter): Unit = symbol.printTo(writer)
 
     override def toString: String = symbol.toString

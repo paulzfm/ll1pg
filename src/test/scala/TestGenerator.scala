@@ -32,7 +32,8 @@ class TestGenerator extends FunSuite {
     }
   }
 
-  test("compute first") {
+  {
+
     /* Grammar:
       S -> AB
       A -> Da|
@@ -50,23 +51,41 @@ class TestGenerator extends FunSuite {
 
     val gen = new Generator(spec)
     val first = gen.computeFirstSet
-    checkTable(List(
-      ("", List(" ")),
-      ("S", List("b", "a", "c")),
-      ("A", List(" ", "b", "a")),
-      ("B", List("c")),
-      ("C", List(" ", "a")),
-      ("D", List(" ", "b")),
-      ("a", List("a")),
-      ("b", List("b")),
-      ("c", List("c")),
-      ("AB", List("b", "a", "c")),
-      ("Da", List("b", "a")),
-      ("cC", List("c")),
-      ("aADC", List("a")),
-      ("ADC", List(" ", "b", "a")),
-      ("DC", List(" ", "b", "a"))
-    ), first)
+    val follow = gen.computeFollowSet(first)
+
+    test("example 1: compute first") {
+      checkTable(List(
+        ("", List(" ")),
+        ("S", List("b", "a", "c")),
+        ("A", List(" ", "b", "a")),
+        ("B", List("c")),
+        ("C", List(" ", "a")),
+        ("D", List(" ", "b")),
+        ("a", List("a")),
+        ("b", List("b")),
+        ("c", List("c")),
+        ("AB", List("b", "a", "c")),
+        ("Da", List("b", "a")),
+        ("cC", List("c")),
+        ("aADC", List("a")),
+        ("ADC", List(" ", "b", "a")),
+        ("DC", List(" ", "b", "a"))
+      ), first)
+    }
+
+    test("example 1: compute follow") {
+      checkTable(List(
+        ("S", List("#")),
+        ("A", List("c", "b", "a", "#")),
+        ("B", List("#")),
+        ("C", List("#")),
+        ("D", List("a", "#"))
+      ), follow)
+    }
+
+    test("example 1: check LL1") {
+
+    }
   }
 
 }
