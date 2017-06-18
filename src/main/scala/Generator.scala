@@ -137,4 +137,55 @@ class Generator(spec: Spec) {
     follow
   }
 
+  /**
+    * Compute predictive set (PS) for all productions.
+    *
+    * @param first  a table presenting first sets.
+    * @param follow a table presenting follow sets.
+    * @return a list presenting predictive sets:
+    *         e.g. item (A, table(a1 -> s1, a2 -> s2)) means PS(A -> a1) = s1 and PS(A -> a2) = s2.
+    */
+  def computePredictiveSet(first: Table, follow: Table): PS =
+    ruleMap.map {
+      case (l, rs) =>
+        val a = List(l)
+        val ps = new mutable.HashMap[Sentence, Set[A]]
+        rs.foreach {
+          alpha =>
+            if (first(alpha).contains(Epsilon)) { // \epsilon \in first(\alpha)
+              // PS(a -> \alpha) = (first(\alpha) – {\epsilon}) + follow(a)
+              ps.update(alpha, first(alpha) - Epsilon ++ follow(a))
+            } else { // \epsilon \not\in first(\alpha)
+              // PS(a -> \alpha) = first(\alpha)
+              ps.update(alpha, first(alpha))
+            }
+        }
+        (l, ps)
+    }.toList
+
+  /**
+    * Check whether the grammar is a LL(1) grammar.
+    *
+    * @param tables a mapping presenting predictive sets.
+    * @return - `None` if the grammar is a LL(1) grammar.
+    *         - `Some((A, a1, s1, a2, s2))` if the grammar is not a LL(1) grammar, and an counter
+    *         example is given as PS(A -> a1) = s1, PS(A -> a2) = s2, but s1 & s2 is non empty.
+    */
+  def checkLL1(tables: List[(NonTerminal, Table)]): Option[(NonTerminal, Sentence, Set[A],
+    Sentence, Set[A])] =
+    if (tables.isEmpty) None
+    else {
+      val (l, t) :: ts = tables
+      val results = for {
+        x <- t.keys
+        y <- t.keys
+        if x != y
+        z = t(x) & t(y)
+      } yield (x, y, z.nonEmpty)
+      results.find(_._3) match {
+        case None => checkLL1(ts)
+        case Some((x, y, _)) => Some((l, x, t(x), y, t(y)))
+      }
+    }
+
 }

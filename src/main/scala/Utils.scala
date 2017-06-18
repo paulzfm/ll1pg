@@ -18,4 +18,6 @@ object Utils {
   case object Sharp extends A
 
   type Table = mutable.HashMap[Sentence, Set[A]]
+
+  type PS = List[(NonTerminal, Table)]
 }

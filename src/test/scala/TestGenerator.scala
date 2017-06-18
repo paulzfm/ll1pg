@@ -51,7 +51,6 @@ class TestGenerator extends FunSuite {
 
     val gen = new Generator(spec)
     val first = gen.computeFirstSet
-    val follow = gen.computeFollowSet(first)
 
     test("example 1: compute first") {
       checkTable(List(
@@ -73,6 +72,8 @@ class TestGenerator extends FunSuite {
       ), first)
     }
 
+    val follow = gen.computeFollowSet(first)
+
     test("example 1: compute follow") {
       checkTable(List(
         ("S", List("#")),
@@ -83,9 +84,31 @@ class TestGenerator extends FunSuite {
       ), follow)
     }
 
-    test("example 1: check LL1") {
+    val ps = gen.computePredictiveSet(first, follow)
 
+    test("example 1: compute predictive set") {
+      val psMap = ps.toMap
+      checkTable(List(
+        ("Da", List("b", "a")),
+        ("", List("c", "b", "a", "#"))
+      ), psMap(NonTerminal("A")))
+      checkTable(List(
+        ("aADC", List("a")),
+        ("", List("#"))
+      ), psMap(NonTerminal("C")))
+      checkTable(List(
+        ("b", List("b")),
+        ("", List("a", "#"))
+      ), psMap(NonTerminal("D")))
+    }
+
+    test("example 1: check LL1") {
+      val (l, x, _, y, _) = gen.checkLL1(ps).get
+      assert(l.symbol.symbol == "A")
+      assert((x == strToSentence("Da") && y.isEmpty) ||
+        (y == strToSentence("Da") && x.isEmpty))
     }
   }
+
 
 }
