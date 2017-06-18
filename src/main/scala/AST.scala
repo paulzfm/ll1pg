@@ -12,21 +12,38 @@ object AST {
 
   case class Ident(symbol: String) extends Node {
     override def printTo(writer: IndentWriter): Unit = writer.write(symbol)
+
+    override def toString: String = symbol
   }
 
   case class Const(symbol: Char) extends Node {
     override def printTo(writer: IndentWriter): Unit = writer.write(symbol.toString)
+
+    override def toString: String = symbol.toString
   }
 
   case class JavaCode(source: String) extends Node {
     override def printTo(writer: IndentWriter): Unit = writer.writeLn(source.trim)
   }
 
-  case class Spec(headers: List[Header], rules: List[Rule]) extends Node {
+  case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start),
+                  rules: List[Rule]) extends Node {
     override def printTo(writer: IndentWriter): Unit = {
-      headers.foreach(_.printTo(writer))
+      //      headers.foreach(_.printTo(writer))
       rules.foreach(_.printTo(writer))
     }
+
+    def tokens: List[Token] = headers._5.tokens
+
+    def start: NonTerminal = headers._6.symbol
+  }
+
+  def Spec(headers: (Tokens,Start), rules: List[Rule]): Spec = {
+    val (tokens, start) = headers
+    Spec(
+      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident("")), tokens, start),
+      rules
+    )
   }
 
   abstract class Header extends Node
@@ -106,6 +123,8 @@ object AST {
     */
   case class IdentToken(ident: Ident) extends Token {
     def printTo(writer: IndentWriter): Unit = ident.printTo(writer)
+
+    override def toString: String = ident.toString
   }
 
   def IdentToken(ident: String): IdentToken = IdentToken(Ident(ident))
@@ -117,6 +136,8 @@ object AST {
     */
   case class ConstToken(const: Const) extends Token {
     def printTo(writer: IndentWriter): Unit = const.printTo(writer)
+
+    override def toString: String = const.toString
   }
 
   def ConstToken(const: Char): Token = ConstToken(Const(const))
@@ -129,13 +150,15 @@ object AST {
     }
   }
 
+  type Sentence = List[Term]
+
   /**
     * CFG rule.
     *
     * @param left   left non-terminal.
     * @param rights right terms with action (in format of Java code).
     */
-  case class Rule(left: NonTerminal, rights: List[(List[Term], JavaCode)]) extends Node {
+  case class Rule(left: NonTerminal, rights: List[(Sentence, JavaCode)]) extends Node {
     def printTo(writer: IndentWriter): Unit = {
       left.printTo(writer)
       writer.writeLn(":")
@@ -166,6 +189,8 @@ object AST {
     */
   case class Terminal(token: Token) extends Term {
     override def printTo(writer: IndentWriter): Unit = token.printTo(writer)
+
+    override def toString: String = token.toString
   }
 
   /**
@@ -175,7 +200,9 @@ object AST {
     */
   case class NonTerminal(symbol: Ident) extends Term {
     override def printTo(writer: IndentWriter): Unit = symbol.printTo(writer)
+
+    override def toString: String = symbol.toString
   }
 
-  def NonTerminal(symbol: String): Term = NonTerminal(Ident(symbol))
+  def NonTerminal(symbol: String): NonTerminal = NonTerminal(Ident(symbol))
 }

@@ -117,7 +117,8 @@ object Parsers {
         }
         val p2 = new RuleParser(tokens)
         p2.parseAll(p2.rules, in) match {
-          case p2.Success(rules: List[Rule], _) => Success(Spec(headers, rules))
+          case p2.Success(rules: List[Rule], _) => ???
+            //Success(Spec(headers, rules))
           case p2.Failure(msg, next) => Failure(ParsingError(msg, next.pos))
           case p2.Error(msg, next) => Failure(ParsingError(msg, next.pos))
         }
