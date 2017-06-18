@@ -33,7 +33,6 @@ class TestGenerator extends FunSuite {
   }
 
   {
-
     /* Grammar:
       S -> AB
       A -> Da|

@@ -20,4 +20,8 @@ object Utils {
   type Table = mutable.HashMap[Sentence, Set[A]]
 
   type PS = List[(NonTerminal, Table)]
+
+  case class NonTerminalParser(symbol: NonTerminal,
+                               cases: List[(List[A], Sentence, JavaCode)])
+
 }

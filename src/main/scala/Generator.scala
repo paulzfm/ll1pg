@@ -166,16 +166,15 @@ class Generator(spec: Spec) {
   /**
     * Check whether the grammar is a LL(1) grammar.
     *
-    * @param tables a mapping presenting predictive sets.
+    * @param ps a list presenting predictive sets.
     * @return - `None` if the grammar is a LL(1) grammar.
     *         - `Some((A, a1, s1, a2, s2))` if the grammar is not a LL(1) grammar, and an counter
     *         example is given as PS(A -> a1) = s1, PS(A -> a2) = s2, but s1 & s2 is non empty.
     */
-  def checkLL1(tables: List[(NonTerminal, Table)]): Option[(NonTerminal, Sentence, Set[A],
-    Sentence, Set[A])] =
-    if (tables.isEmpty) None
+  def checkLL1(ps: PS): Option[(NonTerminal, Sentence, Set[A], Sentence, Set[A])] =
+    if (ps.isEmpty) None
     else {
-      val (l, t) :: ts = tables
+      val (l, t) :: ts = ps
       val results = for {
         x <- t.keys
         y <- t.keys
@@ -188,4 +187,20 @@ class Generator(spec: Spec) {
       }
     }
 
+  /**
+    * Assert the given grammar is a LL(1) grammar.
+    * Will throw exception if the assertion is violated.
+    *
+    * @param ps a list presenting predictive sets.
+    */
+  def assertLL1(ps: PS): Unit = checkLL1(ps) match {
+    case None => // success
+    case Some((l, x, sx, y, sy)) => // failure
+      throw new Exception("Not LL(1) grammar:")
+  }
+
+  def generateCode(ps: PS): JavaCodeFile = {
+    val parsers = ???
+    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, ???, ???)
+  }
 }

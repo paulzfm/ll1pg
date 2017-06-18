@@ -33,12 +33,20 @@ object AST {
       rules.foreach(_.printTo(writer))
     }
 
+    def pkg: Package = headers._1
+
+    def imports: Imports = headers._2
+
+    def sem: SemValue = headers._3
+
+    def cls: Class = headers._4
+
     def tokens: List[Token] = headers._5.tokens
 
     def start: NonTerminal = headers._6.symbol
   }
 
-  def Spec(headers: (Tokens,Start), rules: List[Rule]): Spec = {
+  def Spec(headers: (Tokens, Start), rules: List[Rule]): Spec = {
     val (tokens, start) = headers
     Spec(
       (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident("")), tokens, start),
