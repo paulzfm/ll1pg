@@ -17,13 +17,19 @@ object AST {
   }
 
   case class Const(symbol: Char) extends Node {
-    override def printTo(writer: IndentWriter): Unit = writer.write(symbol.toString)
+    override def printTo(writer: IndentWriter): Unit = {
+      writer.write("'")
+      writer.write(symbol.toString)
+      writer.write("'")
+    }
 
-    override def toString: String = symbol.toString
+    override def toString: String = s"'${symbol.toString}'"
   }
 
   case class JavaCode(source: String) extends Node {
-    override def printTo(writer: IndentWriter): Unit = writer.writeLn(source.trim)
+    override def printTo(writer: IndentWriter): Unit = writer.writeLn(
+      source.trim.replaceAll("[$]([1-9][0-9]*)", "params[$1]")
+        .replaceAll("[$]{2}", "params[0]"))
   }
 
   case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start),
@@ -79,12 +85,14 @@ object AST {
       name.printTo(writer)
       writer.writeLn(";")
     }
+
+    override def toString: String = name.toString
   }
 
   case class Class(name: Ident, superClass: Option[Ident] = None,
                    implements: Option[List[Ident]] = None) extends Header {
     override def printTo(writer: IndentWriter): Unit = {
-      writer.write("class ")
+      writer.write("public class ")
       name.printTo(writer)
       superClass match {
         case Some(cls) =>
@@ -98,7 +106,6 @@ object AST {
           printSep(writer, "", "")(is)
         case None =>
       }
-      writer.writeLn(";")
     }
   }
 
@@ -122,7 +129,9 @@ object AST {
   /**
     * Lexer token.
     */
-  abstract class Token extends Node
+  abstract class Token extends Node {
+    def isIdent: Boolean
+  }
 
   /**
     * Token declared by an identifier.
@@ -130,7 +139,11 @@ object AST {
     * @param ident the identifier.
     */
   case class IdentToken(ident: Ident) extends Token {
-    def printTo(writer: IndentWriter): Unit = ident.printTo(writer)
+    override def isIdent: Boolean = true
+
+    def printTo(writer: IndentWriter): Unit = {
+      ident.printTo(writer)
+    }
 
     override def toString: String = ident.toString
   }
@@ -143,6 +156,8 @@ object AST {
     * @param const the character.
     */
   case class ConstToken(const: Const) extends Token {
+    override def isIdent: Boolean = false
+
     def printTo(writer: IndentWriter): Unit = const.printTo(writer)
 
     override def toString: String = const.toString

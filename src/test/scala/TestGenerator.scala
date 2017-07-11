@@ -1,8 +1,11 @@
 import AST._
+import Parsers.parse
 import Utils._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
+
+import scala.util.{Failure, Success}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -13,7 +16,7 @@ class TestGenerator extends FunSuite {
   }.toList
 
   def createRule(left: String, rights: List[String]): Rule = Rule(NonTerminal(left), rights.map {
-    s => (strToSentence(s), JavaCode(""))
+    s => (strToSentence(s), JavaCode(s"<code for $left -> $s>"))
   })
 
   def createHeaders(tokens: String, start: String): (Tokens, Start) =
@@ -35,10 +38,10 @@ class TestGenerator extends FunSuite {
   {
     /* Grammar:
       S -> AB
-      A -> Da|
+      A -> Da|`epsilon`
       B -> cC
-      C -> aADC|
-      D -> b|
+      C -> aADC|`epsilon`
+      D -> b|`epsilon`
      */
     val spec = Spec(createHeaders("abc", "S"), List(
       createRule("S", List("AB")),
@@ -107,7 +110,74 @@ class TestGenerator extends FunSuite {
       assert((x == strToSentence("Da") && y.isEmpty) ||
         (y == strToSentence("Da") && x.isEmpty))
     }
+
+    test("example 1: print code") {
+      val code = gen.generateCode(ps)
+      val writer = new IndentWriter
+      code.printTo(writer)
+      writer.printToConsole()
+    }
   }
 
+  test("example 2: compute predictive set") {
+    /* Grammar:
+      S -> AaS | BbS | d
+      A -> a
+      B -> `epsilon` | c
+     */
+
+    val spec = Spec(createHeaders("abc", "S"), List(
+      createRule("S", List("AaS", "BbS", "d")),
+      createRule("A", List("a")),
+      createRule("B", List("", "c"))
+    ))
+
+    val gen = new Generator(spec)
+    val first = gen.computeFirstSet
+    val follow = gen.computeFollowSet(first)
+    val ps = gen.computePredictiveSet(first, follow)
+
+    val psMap = ps.toMap
+    checkTable(List(
+      ("AaS", List("a")),
+      ("BbS", List("c", "b")),
+      ("d", List("d"))
+    ), psMap(NonTerminal("S")))
+    checkTable(List(
+      ("a", List("a"))
+    ), psMap(NonTerminal("A")))
+    checkTable(List(
+      ("", List("b")),
+      ("c", List("c"))
+    ), psMap(NonTerminal("B")))
+  }
+
+  test("example 3: arith") {
+    val src = io.Source.fromInputStream(getClass.getResourceAsStream("arith.ll1")).mkString
+    parse(src) match {
+      case Success(spec) =>
+        val gen = new Generator(spec)
+        val code = gen.generate
+        val writer = new IndentWriter
+        code.printTo(writer)
+        writer.printToConsole()
+      case Failure(ex) => ex.printStackTrace()
+    }
+  }
+
+  test("example 3") {
+    val f = scala.io.Source.fromFile("/Users/paul/Workspace/decaf_PA1_B/tools/ParserGenerator/" +
+      "decaf.pg")
+    val src = try f.mkString finally f.close()
+    parse(src) match {
+      case Success(spec) =>
+        val gen = new Generator(spec)
+        val code = gen.generate
+        val writer = new IndentWriter
+        code.printTo(writer)
+        writer.printToConsole()
+      case Failure(ex) => ex.printStackTrace()
+    }
+  }
 
 }

@@ -8,8 +8,16 @@ import scala.collection.mutable
   */
 
 class Generator(spec: Spec) {
-  val ruleMap: Map[NonTerminal, Set[Sentence]] =
-    spec.rules.groupBy(_.left).mapValues(_.flatMap(_.rights).unzip._1.toSet)
+  /**
+    * Map non-terminals to their corresponding rules.
+    */
+  val rulesMap: Map[NonTerminal, List[Rule]] = spec.rules.groupBy(_.left)
+
+  /**
+    * Map non-terminals to their corresponding sentences (right-hand sides).
+    */
+  val sentencesMap: Map[NonTerminal, Set[Sentence]] =
+    rulesMap.mapValues(_.flatMap(_.rights).unzip._1.toSet)
 
   /**
     * Compute first set for all terminals, non-terminals, \epsilon (the empty sentence), and all
@@ -28,7 +36,7 @@ class Generator(spec: Spec) {
 
     // All terminals, non-terminals, \epsilon and suffix.
     val sentences = (Nil :: spec.tokens.map(t => List(Terminal(t))) ++
-      ruleMap.keys.map(List(_)) ++ suffix).distinct
+      sentencesMap.keys.map(List(_)) ++ suffix).distinct
 
     val first: Table = new mutable.HashMap[Sentence, Set[A]]
     // Initialize: first(x) = {x} if x is terminal or x is \epsilon.
@@ -48,7 +56,7 @@ class Generator(spec: Spec) {
           y match {
             // 1. y = A where A is non-terminal
             case List(NonTerminal(sym)) =>
-              ruleMap.get(NonTerminal(sym)) match {
+              sentencesMap.get(NonTerminal(sym)) match {
                 case None =>
                 case Some(ss) =>
                   val updated = first(y) ++ ss.flatMap(first(_))
@@ -99,7 +107,7 @@ class Generator(spec: Spec) {
     // 1. follow(S) = {#}
     follow.update(List(spec.start), Set(Sharp))
     // 2. follow(A) = {} where A is NonTerminal, A /= S
-    ruleMap.keys.filterNot(_ == spec.start).toList.distinct.
+    sentencesMap.keys.filterNot(_ == spec.start).toList.distinct.
       map(List(_)).foreach(follow.update(_, Set()))
 
     var changed = true
@@ -107,7 +115,7 @@ class Generator(spec: Spec) {
     while (changed) {
       changed = false
       for {
-        (l, rs) <- ruleMap
+        (l, rs) <- sentencesMap
         r <- rs // rule: l -> r
         i <- r.indices
         if r(i).nonTerminal
@@ -146,7 +154,7 @@ class Generator(spec: Spec) {
     *         e.g. item (A, table(a1 -> s1, a2 -> s2)) means PS(A -> a1) = s1 and PS(A -> a2) = s2.
     */
   def computePredictiveSet(first: Table, follow: Table): PS =
-    ruleMap.map {
+    sentencesMap.map {
       case (l, rs) =>
         val a = List(l)
         val ps = new mutable.HashMap[Sentence, Set[A]]
@@ -196,11 +204,33 @@ class Generator(spec: Spec) {
   def assertLL1(ps: PS): Unit = checkLL1(ps) match {
     case None => // success
     case Some((l, x, sx, y, sy)) => // failure
-      throw new Exception("Not LL(1) grammar:")
+      throw new Exception(s"Not LL(1) grammar: PS($l -> $x) = $sx, PS($l -> $y) = $sy, " +
+        s"but $sx & $sy is non empty")
   }
 
+  /**
+    * Generate target code, i.e. the LL(1) parser, from predictive sets.
+    *
+    * @param ps a list presenting predictive sets.
+    * @return Java code.
+    */
   def generateCode(ps: PS): JavaCodeFile = {
-    val parsers = ???
-    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, ???, ???)
+    val parsers = ps.map {
+      case (nt, tb) =>
+        val codeMap = rulesMap(nt).flatMap(_.rights).toMap
+        val cases = tb.map {
+          case (s, terms) => (terms.toList, s, codeMap(s))
+        }.toList
+        NonTerminalParser(spec.sem, nt, cases)
+    }
+    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers)
+  }
+
+  def generate: JavaCodeFile = {
+    val first = computeFirstSet
+    val follow = computeFollowSet(first)
+    val ps = computePredictiveSet(first, follow)
+    assertLL1(ps)
+    generateCode(ps)
   }
 }

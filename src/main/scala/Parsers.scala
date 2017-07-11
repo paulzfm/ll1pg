@@ -110,15 +110,24 @@ object Parsers {
   def parse(source: String): Try[Spec] = {
     val p1 = new HeaderParsers
     p1.parse(p1.headers, source) match {
-      case p1.Success(headers: List[Header], in) =>
-        val tokens = headers.flatMap {
+      case p1.Success(hds: List[Header], in) =>
+        val tokens = hds.flatMap {
           case Tokens(ts) => ts
           case _ => Nil
         }
+        //Package, Imports, SemValue, Class, Tokens, Start
+        val headers = (
+          hds.find(_.isInstanceOf[Package]).get.asInstanceOf[Package],
+          hds.find(_.isInstanceOf[Imports]).get.asInstanceOf[Imports],
+          hds.find(_.isInstanceOf[SemValue]).get.asInstanceOf[SemValue],
+          hds.find(_.isInstanceOf[Class]).get.asInstanceOf[Class],
+          hds.find(_.isInstanceOf[Tokens]).get.asInstanceOf[Tokens],
+          hds.find(_.isInstanceOf[Start]).get.asInstanceOf[Start]
+        )
+
         val p2 = new RuleParser(tokens)
         p2.parseAll(p2.rules, in) match {
-          case p2.Success(rules: List[Rule], _) => ???
-            //Success(Spec(headers, rules))
+          case p2.Success(rules: List[Rule], _) => Success(Spec(headers, rules))
           case p2.Failure(msg, next) => Failure(ParsingError(msg, next.pos))
           case p2.Error(msg, next) => Failure(ParsingError(msg, next.pos))
         }
