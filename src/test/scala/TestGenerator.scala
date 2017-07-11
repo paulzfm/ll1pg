@@ -1,11 +1,8 @@
 import AST._
-import Parsers.parse
 import Utils._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
-
-import scala.util.{Failure, Success}
 
 
 @RunWith(classOf[JUnitRunner])
@@ -110,13 +107,6 @@ class TestGenerator extends FunSuite {
       assert((x == strToSentence("Da") && y.isEmpty) ||
         (y == strToSentence("Da") && x.isEmpty))
     }
-
-    test("example 1: print code") {
-      val code = gen.generateCode(ps)
-      val writer = new IndentWriter
-      code.printTo(writer)
-      writer.printToConsole()
-    }
   }
 
   test("example 2: compute predictive set") {
@@ -150,34 +140,6 @@ class TestGenerator extends FunSuite {
       ("", List("b")),
       ("c", List("c"))
     ), psMap(NonTerminal("B")))
-  }
-
-  test("example 3: arith") {
-    val src = io.Source.fromInputStream(getClass.getResourceAsStream("arith.ll1")).mkString
-    parse(src) match {
-      case Success(spec) =>
-        val gen = new Generator(spec)
-        val code = gen.generate
-        val writer = new IndentWriter
-        code.printTo(writer)
-        writer.printToConsole()
-      case Failure(ex) => ex.printStackTrace()
-    }
-  }
-
-  test("example 3") {
-    val f = scala.io.Source.fromFile("/Users/paul/Workspace/decaf_PA1_B/tools/ParserGenerator/" +
-      "decaf.pg")
-    val src = try f.mkString finally f.close()
-    parse(src) match {
-      case Success(spec) =>
-        val gen = new Generator(spec)
-        val code = gen.generate
-        val writer = new IndentWriter
-        code.printTo(writer)
-        writer.printToConsole()
-      case Failure(ex) => ex.printStackTrace()
-    }
   }
 
 }

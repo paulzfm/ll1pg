@@ -1,10 +1,10 @@
-/**
-  * Created by paul on 18/06/2017.
-  */
-
 import AST._
+
 import scala.collection.mutable
 
+/**
+  * Utilities.
+  */
 object Utils {
 
   abstract class A
@@ -59,8 +59,6 @@ object Utils {
       writer.decIndent()
       writer.writeLn("}")
     }
-
-
   }
 
 }

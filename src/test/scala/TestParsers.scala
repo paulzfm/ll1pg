@@ -4,8 +4,6 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
-import scala.util.{Failure, Success}
-
 
 @RunWith(classOf[JUnitRunner])
 class TestParsers extends FunSuite {
@@ -165,16 +163,4 @@ class TestParsers extends FunSuite {
     }
   }
 
-  test("parse file") {
-    val f = scala.io.Source.fromFile("/Users/paul/Workspace/decaf_PA1_B/tools/ParserGenerator/" +
-      "decaf.pg")
-    val src = try f.mkString finally f.close()
-    parse(src) match {
-      case Success(spec) =>
-        val writer = new IndentWriter
-        spec.printTo(writer)
-        writer.printToConsole()
-      case Failure(ex) => ex.printStackTrace()
-    }
-  }
 }

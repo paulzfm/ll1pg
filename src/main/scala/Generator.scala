@@ -4,9 +4,10 @@ import Utils._
 import scala.collection.mutable
 
 /**
-  * Created by paul on 18/06/2017.
+  * Parser generator from the specification defined with `AST`.
+  * This generator implements the algorithms to compute First Set, Follow Set and Predictive Set.
+  * Parsers will be constructed according to the Predictive Set.
   */
-
 class Generator(spec: Spec) {
   /**
     * Map non-terminals to their corresponding rules.
@@ -226,6 +227,12 @@ class Generator(spec: Spec) {
     new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers)
   }
 
+  /**
+    * The explicitly interface that wraps all the necessary steps.
+    * Always call this instead of manually calling the above algorithms.
+    *
+    * @return the target parser.
+    */
   def generate: JavaCodeFile = {
     val first = computeFirstSet
     val follow = computeFollowSet(first)
