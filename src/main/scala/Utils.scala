@@ -1,4 +1,4 @@
-import AST._
+import SpecAST._
 
 import scala.collection.mutable
 
@@ -7,24 +7,58 @@ import scala.collection.mutable
   */
 object Utils {
 
-  abstract class A
+  /**
+    * Lookahead symbol.
+    */
+  abstract class LASym
 
-  case class Term(token: Token) extends A {
+  /**
+    * The symbol is a lexer `Token`.
+    *
+    * @param token the lexer token.
+    */
+  case class Term(token: Token) extends LASym {
     override def toString: String = token.toString
   }
 
-  case object Epsilon extends A
+  /**
+    * Empty symbol `epsilon`.
+    */
+  case object Epsilon extends LASym {
+    override def toString: String = "."
+  }
 
-  case object Sharp extends A
+  /**
+    * End symbol `#`.
+    */
+  case object Sharp extends LASym {
+    override def toString: String = "#"
+  }
 
-  type Table = mutable.HashMap[Sentence, Set[A]]
+  /**
+    * A map to store first and follow sets of sentences.
+    */
+  type Table = mutable.HashMap[Sentence, Set[LASym]]
 
+  /**
+    * A list to store predictive sets.
+    */
   type PS = List[(NonTerminal, Table)]
 
+  /**
+    * Parser for non-terminal implemented as a Java method `parse$symbol`.
+    *
+    * @param semValue a class to store semantic values, used as the return type for the parser.
+    * @param symbol   non-terminal symbol.
+    * @param cases    list of cases, and a case is a tuple `(as, s, c)` where
+    *                 - `as` is a list of lookahead symbols this case accepts;
+    *                 - `s` is the right-hand side sentence of production `symbol -> s`;
+    *                 - `c` is the Java code describing actions to do after parsing with this rule.
+    */
   case class NonTerminalParser(semValue: SemValue, symbol: NonTerminal,
-                               cases: List[(List[A], Sentence, JavaCode)]) extends Printable {
+                               cases: List[(List[LASym], Sentence, JavaCode)]) extends Printable {
     override def printTo(writer: IndentWriter): Unit = {
-      writer.writeLn(s"private $semValue Parse$symbol() {")
+      writer.writeLn(s"private $semValue parse$symbol() {")
       writer.incIndent()
       writer.writeLn("switch (lookahead) {")
       writer.incIndent()
@@ -32,19 +66,19 @@ object Utils {
         case (ts, s, c) =>
           ts.foreach {
             case Sharp =>
-              writer.writeLn(s"case YYEOF:")
-              writer.writeLn(s"case YYEOS:")
+              writer.writeLn(s"case eof:")
+              writer.writeLn(s"case eos:")
             case Term(t) => writer.writeLn(s"case $t:")
           }
           writer.writeLn("{")
           writer.incIndent()
-          writer.writeLn(s"SemValue[] params = new SemValue[${s.length + 1}];")
-          writer.writeLn(s"params[0] = new SemValue();")
+          writer.writeLn(s"$semValue[] params = new $semValue[${s.length + 1}];")
+          writer.writeLn(s"params[0] = new $semValue();")
           s.zipWithIndex.foreach {
             case (Terminal(t), i) =>
-              writer.writeLn(s"params[${i + 1}] = MatchToken($t);")
+              writer.writeLn(s"params[${i + 1}] = matchToken($t);")
             case (NonTerminal(t), i) =>
-              writer.writeLn(s"params[${i + 1}] = Parse$t();")
+              writer.writeLn(s"params[${i + 1}] = parse$t();")
           }
           c.printTo(writer)
           writer.writeLn("return params[0];")
@@ -52,8 +86,13 @@ object Utils {
           writer.writeLn("}")
       }
       writer.writeLn("default:")
-      // TODO: fix error handler
-      writer.writeLn("throw new RuntimeException(\"invalid lookahead: \" + lookahead);")
+      writer.incIndent()
+      writer.writeLn(s"error(name(lookahead), [${
+        cases.flatMap {
+          case (ts, _, _) => ts
+        }.map("name(" + _ + ")").mkString(", ")
+      }]);")
+      writer.decIndent()
       writer.decIndent()
       writer.writeLn("}")
       writer.decIndent()

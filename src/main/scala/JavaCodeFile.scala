@@ -1,12 +1,34 @@
-/**
-  * Created by paul on 18/06/2017.
-  */
-
 import java.util.Calendar
 
-import AST._
+import SpecAST._
 import Utils._
 
+/**
+  * Target parser implemented as a Java public class.
+  *
+  * The following methods should be implemented in the base class:
+  * - `int lex()`: get next token (an integer) from lexer
+  *
+  * - `void error(String token)`: handle syntax error when EOF or EOS expected, but `token` found
+  * - `void error(String token, String expected)`: handle syntax error when `expected` is expected
+  * but `token` is found
+  * - `void error(String token, String[] acceptable)`: handle syntax error when one of `acceptable`
+  * token is acceptable but `token` is found
+  *
+  * The parser entry function is:
+  * `semValue parse()`
+  * If no exception is thrown, then parsing is successful and the parsing result will be returned
+  * in type `semValue`.
+  *
+  * @param pkg      class package. (`package ...` in Java)
+  * @param imports  class dependencies. (`import ...` in Java)
+  * @param cls      class name as well as heritages. (`class ... extends ... implements` in Java)
+  * @param semValue a class to store semantic values, used as the return type for each
+  *                 non-terminal parser.
+  * @param start    starting symbol of CFG, used as the parser entry.
+  * @param tokens   tokens (or terminals), will be obtained from the lexer.
+  * @param parsers  all non-terminal parsers.
+  */
 class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
                    val semValue: SemValue, val start: NonTerminal,
                    val tokens: List[Token],
@@ -28,10 +50,10 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.incIndent()
 
     // Print yy variables.
-    writer.writeLn("public static final int YYEOF = -1;")
-    writer.writeLn("public static final int YYEOS = 0;")
+    writer.writeLn("public static final int eof = -1;")
+    writer.writeLn("public static final int eos = 0;")
     writer.writeLn("public int lookahead = -1;")
-    writer.writeLn(s"public $semValue yylval = new $semValue();")
+    writer.writeLn(s"public $semValue val = new $semValue();")
     writer.writeLn()
 
     // Print tokens.
@@ -55,7 +77,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     // Print helper functions.
     printFuncNameTo(writer)
     writer.writeLn()
-    printFuncYYParseTo(writer)
+    printFuncParseTo(writer)
     writer.writeLn()
     printFuncMatchTokenTo(writer)
     writer.writeLn()
@@ -102,36 +124,36 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.writeLn("}")
   }
 
-  private def printFuncYYParseTo(writer: IndentWriter): Unit = {
-    writer.writeLn("public int yyparse() {")
+  private def printFuncParseTo(writer: IndentWriter): Unit = {
+    writer.writeLn(s"public $semValue parse() {")
     writer.incIndent()
     writer.writeLn("if (lookahead < 0) {")
     writer.incIndent()
-    writer.writeLn("lookahead = yylex();")
+    writer.writeLn("lookahead = lex();")
     writer.decIndent()
     writer.writeLn("}")
-    writer.writeLn(s"Parse$start();")
-    writer.writeLn("if (lookahead != YYEOS && lookahead != YYEOF) {")
+    writer.writeLn(s"$semValue result = parse$start();")
+    writer.writeLn("if (lookahead != eos && lookahead != eof) {")
     writer.incIndent()
-    writer.writeLn("throw new RuntimeException(String.format(\"\\n***Syntax Error: Invalid tokens after:(%d)%s at %s\", lookahead, name(lookahead), yylval.loc));")
+    writer.writeLn("error(lookahead);")
     writer.decIndent()
     writer.writeLn("}")
-    writer.writeLn("return 0;")
+    writer.writeLn("return result;")
     writer.decIndent()
     writer.writeLn("}")
   }
 
   private def printFuncMatchTokenTo(writer: IndentWriter): Unit = {
-    writer.writeLn(s"public $semValue MatchToken(int expected) {")
+    writer.writeLn(s"public $semValue matchToken(int expected) {")
     writer.incIndent()
-    writer.writeLn(s"$semValue self = yylval;")
+    writer.writeLn(s"$semValue self = val;")
     writer.writeLn("if (lookahead == expected) {")
     writer.incIndent()
-    writer.writeLn("lookahead = yylex(); // get next token")
+    writer.writeLn("lookahead = lex();")
     writer.decIndent()
     writer.writeLn("} else {")
     writer.incIndent()
-    writer.writeLn("throw new RuntimeException(String.format(\"\\n***Syntax Error: Expecting:(%d)%s at %s, but [%s] given\", expected, name(expected), yylval.loc, name(lookahead)));")
+    writer.writeLn("error(name(lookahead), name(expected));")
     writer.decIndent()
     writer.writeLn("}")
     writer.writeLn("return self;")

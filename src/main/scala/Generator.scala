@@ -1,4 +1,4 @@
-import AST._
+import SpecAST._
 import Utils._
 
 import scala.collection.mutable
@@ -39,7 +39,7 @@ class Generator(spec: Spec) {
     val sentences = (Nil :: spec.tokens.map(t => List(Terminal(t))) ++
       sentencesMap.keys.map(List(_)) ++ suffix).distinct
 
-    val first: Table = new mutable.HashMap[Sentence, Set[A]]
+    val first: Table = new mutable.HashMap[Sentence, Set[LASym]]
     // Initialize: first(x) = {x} if x is terminal or x is \epsilon.
     //             first(x) = {}  otherwise.
     sentences.foreach {
@@ -103,7 +103,7 @@ class Generator(spec: Spec) {
     * @return a table presenting follow sets.
     */
   def computeFollowSet(first: Table): Table = {
-    val follow: Table = new mutable.HashMap[Sentence, Set[A]]
+    val follow: Table = new mutable.HashMap[Sentence, Set[LASym]]
     // Initialize.
     // 1. follow(S) = {#}
     follow.update(List(spec.start), Set(Sharp))
@@ -158,7 +158,7 @@ class Generator(spec: Spec) {
     sentencesMap.map {
       case (l, rs) =>
         val a = List(l)
-        val ps = new mutable.HashMap[Sentence, Set[A]]
+        val ps = new mutable.HashMap[Sentence, Set[LASym]]
         rs.foreach {
           alpha =>
             if (first(alpha).contains(Epsilon)) { // \epsilon \in first(\alpha)
@@ -180,7 +180,7 @@ class Generator(spec: Spec) {
     *         - `Some((A, a1, s1, a2, s2))` if the grammar is not a LL(1) grammar, and an counter
     *         example is given as PS(A -> a1) = s1, PS(A -> a2) = s2, but s1 & s2 is non empty.
     */
-  def checkLL1(ps: PS): Option[(NonTerminal, Sentence, Set[A], Sentence, Set[A])] =
+  def checkLL1(ps: PS): Option[(NonTerminal, Sentence, Set[LASym], Sentence, Set[LASym])] =
     if (ps.isEmpty) None
     else {
       val (l, t) :: ts = ps

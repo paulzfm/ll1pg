@@ -1,14 +1,13 @@
-/**
-  * Created by paul on 07/04/2017.
-  */
-
-import AST._
+import SpecAST._
 
 import scala.util.matching.Regex
 import scala.util.parsing.combinator.RegexParsers
 import scala.util.parsing.input.{NoPosition, Position}
 import scala.util.{Failure, Success, Try}
 
+/**
+  * Parsers to parse a specification file.
+  */
 object Parsers {
 
   class CodeLineParser extends RegexParsers {

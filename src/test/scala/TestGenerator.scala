@@ -1,4 +1,4 @@
-import AST._
+import SpecAST._
 import Utils._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite

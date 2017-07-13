@@ -1,11 +1,11 @@
 import scala.util.parsing.input.Positional
 
 /**
-  * Context Free Grammar (CFG) definition.
-  * Used as the input specification, illustrating how the syntax of the target language is like.
-  * LL1-parser-gen will automatically generate the corresponding parser.
+  * Specification which illustrating how the syntax of the target language is like.
+  * The language syntax is described with a LL1 parser and LL1-parser-gen will automatically
+  * generate the corresponding parser implementation in Java.
   */
-object AST {
+object SpecAST {
 
   abstract class Node extends Positional with Printable
 

@@ -1,4 +1,4 @@
-import AST._
+import SpecAST._
 import Parsers._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
