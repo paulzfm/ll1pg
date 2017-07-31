@@ -62,6 +62,8 @@ object Parsers {
 
     def semValue: Parser[SemValue] = "%sem" ~> ident ^^ SemValue
 
+    def compileErr: Parser[ParseError] = "%err" ~> ident ^^ ParseError
+
     def cls: Parser[Class] =
       "%class" ~> ident ~ ("extends" ~> ident).? ~ ("implements" ~> ident.+).? ^^ {
         case c ~ e ~ is => Class(c, e, is)
@@ -71,7 +73,7 @@ object Parsers {
 
     def tokens: Parser[Tokens] = "%tokens" ~> token.* ^^ Tokens
 
-    def header: Parser[Header] = pkg | imports | semValue | cls | start | tokens
+    def header: Parser[Header] = pkg | imports | semValue | compileErr | cls | start | tokens
 
     def headers: Parser[List[Header]] = header.*
   }
@@ -114,14 +116,15 @@ object Parsers {
           case Tokens(ts) => ts
           case _ => Nil
         }
-        //Package, Imports, SemValue, Class, Tokens, Start
+        //Package, Imports, SemValue, Class, Tokens, Start, CompileErr
         val headers = (
           hds.find(_.isInstanceOf[Package]).get.asInstanceOf[Package],
           hds.find(_.isInstanceOf[Imports]).get.asInstanceOf[Imports],
           hds.find(_.isInstanceOf[SemValue]).get.asInstanceOf[SemValue],
           hds.find(_.isInstanceOf[Class]).get.asInstanceOf[Class],
           hds.find(_.isInstanceOf[Tokens]).get.asInstanceOf[Tokens],
-          hds.find(_.isInstanceOf[Start]).get.asInstanceOf[Start]
+          hds.find(_.isInstanceOf[Start]).get.asInstanceOf[Start],
+          hds.find(_.isInstanceOf[ParseError]).get.asInstanceOf[ParseError]
         )
 
         val p2 = new RuleParser(tokens)

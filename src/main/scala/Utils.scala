@@ -32,7 +32,7 @@ object Utils {
     * End symbol `#`.
     */
   case object Sharp extends LASym {
-    override def toString: String = "#"
+    override def toString: String = "'#'"
   }
 
   /**
@@ -49,16 +49,17 @@ object Utils {
     * Parser for non-terminal implemented as a Java method `parse$symbol`.
     *
     * @param semValue a class to store semantic values, used as the return type for the parser.
+    * @param parseErr a class to store compile error information.
     * @param symbol   non-terminal symbol.
     * @param cases    list of cases, and a case is a tuple `(as, s, c)` where
     *                 - `as` is a list of lookahead symbols this case accepts;
     *                 - `s` is the right-hand side sentence of production `symbol -> s`;
     *                 - `c` is the Java code describing actions to do after parsing with this rule.
     */
-  case class NonTerminalParser(semValue: SemValue, symbol: NonTerminal,
+  case class NonTerminalParser(semValue: SemValue, parseErr: ParseError, symbol: NonTerminal,
                                cases: List[(List[LASym], Sentence, JavaCode)]) extends Printable {
     override def printTo(writer: IndentWriter): Unit = {
-      writer.writeLn(s"private $semValue parse$symbol() {")
+      writer.writeLn(s"private $semValue parse$symbol() throws $parseErr {")
       writer.incIndent()
       writer.writeLn("switch (lookahead) {")
       writer.incIndent()
@@ -86,13 +87,16 @@ object Utils {
           writer.writeLn("}")
       }
       writer.writeLn("default:")
+      writer.writeLn("{")
       writer.incIndent()
-      writer.writeLn(s"error(name(lookahead), [${
+      writer.writeLn(s"String[] acc = {${
         cases.flatMap {
           case (ts, _, _) => ts
         }.map("name(" + _ + ")").mkString(", ")
-      }]);")
+      }};")
+      writer.writeLn(s"throw error(name(lookahead), acc);")
       writer.decIndent()
+      writer.writeLn("}")
       writer.decIndent()
       writer.writeLn("}")
       writer.decIndent()

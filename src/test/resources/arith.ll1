@@ -15,10 +15,12 @@
 %import
 arith.Expr
 arith.Expr.*
+arith.error.CompileError
 java.util.*
 
 %class Parser extends BaseParser
 %sem SemValue
+%err CompileError
 %start S
 
 %tokens NUM '+' '*' '(' ')'

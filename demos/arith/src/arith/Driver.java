@@ -12,8 +12,6 @@ public final class Driver {
 
 	private static Driver driver;
 
-	private List<CompileError> errors;
-
 	private Lexer lexer;
 
 	private Parser parser;
@@ -22,33 +20,16 @@ public final class Driver {
 		return driver;
 	}
 
-	public void issueError(CompileError error) {
-		errors.add(error);
+	public void issueError(CompileError error) throws CompileError {
+		throw error;
 	}
 
-	public void checkPoint() {
-		if (errors.size() > 0) {
-			Collections.sort(errors, new Comparator<CompileError>() {
-
-				public int compare(CompileError o1, CompileError o2) {
-					return o1.getLocation().compareTo(o2.getLocation());
-				}
-
-			});
-			for (CompileError error : errors) {
-				System.err.println(error);
-			}
-		}
-	}
-
-	private void compile(InputStream in) {
+	private void compile(InputStream in) throws CompileError {
 		lexer = new Lexer(in);
 		parser = new Parser();
 		lexer.setParser(parser);
 		parser.setLexer(lexer);
-		errors = new ArrayList<CompileError>();
 		Expr tree = parser.parseFile();
-		checkPoint();
 		System.out.println(tree);
 		System.out.println(tree.eval());
 	}
@@ -56,11 +37,20 @@ public final class Driver {
 	public static void main(String[] args) throws IOException {
 		driver = new Driver();
 		Console console = System.console();
-		System.out.println("Arith - type expressions and enter to evaluate it.");
+		System.out.println("Arith - type expressions and enter to evaluate.");
+		System.out.println("      - type 'q' to quit.");
 		while (true) {
 			String expr = console.readLine(">> ");
+			if (expr.charAt(0) == 'q') {
+				break;
+			}
+
 			InputStream in = new ByteArrayInputStream(expr.getBytes());
-			driver.compile(in);
+			try {
+				driver.compile(in);
+			} catch (CompileError err) {
+				System.err.println(err);
+			}
 		}
 	}
 

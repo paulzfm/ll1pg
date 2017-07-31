@@ -5,7 +5,7 @@ import arith.Location;
 /**
  * decaf中所有编译错误的基类
  */
-public abstract class CompileError {
+public abstract class CompileError extends Exception {
 
 	/**
 	 * 编译错误所在的位置

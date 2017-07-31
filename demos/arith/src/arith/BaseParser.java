@@ -4,6 +4,7 @@ import arith.Driver;
 import arith.Expr;
 import arith.error.CompileError;
 import arith.error.MsgError;
+import java.util.Arrays;
 
 public abstract class BaseParser {
 	private Lexer lexer;
@@ -18,30 +19,30 @@ public abstract class BaseParser {
 		return tree;
 	}
 
-	protected void issueError(CompileError error) {
-		Driver.getDriver().issueError(error);
+	protected MsgError error(String token) {
+		return new MsgError(lexer.getLocation(), token);
 	}
 
-	void yyerror(String msg) {
-		Driver.getDriver().issueError(
-				new MsgError(lexer.getLocation(), msg));
+	protected MsgError error(String token, String expected) {
+		return new MsgError(lexer.getLocation(),
+				expected + " is expected but " + token + " is " + "found");
 	}
 
-	int yylex() {
-		int token = -1;
-		try {
-			token = lexer.yylex();
-		} catch (Exception e) {
-			yyerror("lexer error: " + e.getMessage());
-		}
+	protected MsgError error(String token, String[] acceptable) {
+		return new MsgError(lexer.getLocation(),
+				Arrays.toString(acceptable) + " are expected but " + token + " is " + "found");
+	}
 
+	protected int lex() throws Exception {
+		int token = lexer.yylex();
+		lexer.handleError();
 		return token;
 	}
 
-	abstract int yyparse();
+	abstract protected SemValue parse() throws CompileError;
 
-	public Expr parseFile() {
-		yyparse();
+	public Expr parseFile() throws CompileError {
+		parse();
 		return tree;
 	}
 

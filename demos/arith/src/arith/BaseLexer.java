@@ -18,13 +18,19 @@ public abstract class BaseLexer {
 
     abstract Location getLocation();
 
-    protected void issueError(CompileError error) {
-        Driver.getDriver().issueError(error);
+    private CompileError error = null;
+
+    public void handleError() throws CompileError {
+        if (error != null) throw error;
+    }
+
+    protected void issueError(CompileError err) {
+        error = err;
     }
 
     protected void setSemantic(Location where, SemValue v) {
         v.loc = where;
-        parser.yylval = v;
+        parser.val = v;
     }
 
     protected int operator(int code) {
@@ -39,7 +45,7 @@ public abstract class BaseLexer {
 
     public void diagnose() throws IOException {
         while (yylex() != 0) {
-            System.out.println(parser.yylval);
+            System.out.println(parser.val);
         }
     }
 }
