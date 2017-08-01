@@ -20,18 +20,11 @@ java.util.*
 
 %class Parser extends BaseParser
 %sem SemValue
-%err CompileError
-%start S
+%start E
 
 %tokens NUM '+' '*' '(' ')'
 
 %%
-
-S   :   E
-        {
-            tree = $1.expr;
-        }
-    ;
 
 E   :   T E1
         {

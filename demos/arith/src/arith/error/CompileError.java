@@ -3,17 +3,17 @@ package arith.error;
 import arith.Location;
 
 /**
- * decaf中所有编译错误的基类
+ * Compilation error.
  */
 public abstract class CompileError extends Exception {
 
 	/**
-	 * 编译错误所在的位置
+	 * Where error happens.
 	 */
 	protected Location location;
 
 	/**
-	 * @return 返回错误的具体描述
+	 * @return description of error.
 	 */
 	protected abstract String getErrMsg();
 
@@ -26,7 +26,7 @@ public abstract class CompileError extends Exception {
 	}
 
 	/**
-	 * 返回包含位置信息在内的完整错误信息
+	 * @return complete description of error including location.
 	 */
 	@Override
 	public String toString() {

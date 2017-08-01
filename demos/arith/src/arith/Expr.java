@@ -2,6 +2,9 @@ package arith;
 
 import java.util.*;
 
+/**
+ * Expressions.
+ */
 public abstract class Expr {
     // Expr types
     public static final int TYPE_ARITH = 1;
@@ -17,8 +20,16 @@ public abstract class Expr {
         this.type = type;
     }
 
+    /**
+     * Evaluate the expression.
+     *
+     * @return computation result.
+     */
     public abstract int eval();
 
+    /**
+     * Arithmetic expressions.
+     */
     public static class ArithExpr extends Expr {
         public int op;
         public Expr left, right;
@@ -54,6 +65,9 @@ public abstract class Expr {
         }
     }
 
+    /**
+     * Numbers (integers).
+     */
     public static class Number extends Expr {
         public int value;
 
@@ -71,6 +85,9 @@ public abstract class Expr {
         public String toString() { return "" + value; }
     }
 
+    /**
+     * Tuple of operator and expression, used by parser as a temporary storage.
+     */
     public static class Term {
         public int op;
         public Expr expr;

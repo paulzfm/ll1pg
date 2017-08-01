@@ -222,10 +222,9 @@ class Generator(spec: Spec) {
         val cases = tb.map {
           case (s, terms) => (terms.toList, s, codeMap(s))
         }.toList
-        NonTerminalParser(spec.sem, spec.err, nt, cases)
+        NonTerminalParser(spec.sem, nt, cases)
     }
-    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.err,
-      spec.start, spec.tokens, parsers)
+    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers)
   }
 
   /**

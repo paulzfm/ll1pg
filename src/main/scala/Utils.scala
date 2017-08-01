@@ -49,17 +49,16 @@ object Utils {
     * Parser for non-terminal implemented as a Java method `parse$symbol`.
     *
     * @param semValue a class to store semantic values, used as the return type for the parser.
-    * @param parseErr a class to store compile error information.
     * @param symbol   non-terminal symbol.
     * @param cases    list of cases, and a case is a tuple `(as, s, c)` where
     *                 - `as` is a list of lookahead symbols this case accepts;
     *                 - `s` is the right-hand side sentence of production `symbol -> s`;
     *                 - `c` is the Java code describing actions to do after parsing with this rule.
     */
-  case class NonTerminalParser(semValue: SemValue, parseErr: ParseError, symbol: NonTerminal,
+  case class NonTerminalParser(semValue: SemValue, symbol: NonTerminal,
                                cases: List[(List[LASym], Sentence, JavaCode)]) extends Printable {
     override def printTo(writer: IndentWriter): Unit = {
-      writer.writeLn(s"private $semValue parse$symbol() throws $parseErr {")
+      writer.writeLn(s"private $semValue parse$symbol() throws Exception {")
       writer.incIndent()
       writer.writeLn("switch (lookahead) {")
       writer.incIndent()

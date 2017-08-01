@@ -3,8 +3,7 @@ package arith.error;
 import arith.Location;
 
 /**
- * example：unrecognized char: '@'<br>
- * PA1
+ * Unrecognize character.
  */
 public class UnrecogCharError extends CompileError {
 

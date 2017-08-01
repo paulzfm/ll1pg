@@ -1,5 +1,5 @@
 /* This is auto-generated Parser source by LL1-Parser-Gen.
- * Generated at: Fri Jul 28 16:26:42 CST 2017
+ * Generated at: Tue Aug 01 17:43:04 CST 2017
  * Please do NOT modify it unless you know what you are doing!
  *
  * Project repository: https://github.com/paulzfm/LL1-Parser-Gen
@@ -35,18 +35,18 @@ public class Parser extends BaseParser {
         }
     }
 
-    public SemValue parse() throws CompileError {
+    public SemValue parse() throws Exception {
         if (lookahead < 0) {
             lookahead = lex();
         }
-        SemValue result = parseS();
+        SemValue result = parseE();
         if (lookahead != eos && lookahead != eof) {
             throw error(name(lookahead));
         }
         return result;
     }
 
-    public SemValue matchToken(int expected) throws CompileError {
+    public SemValue matchToken(int expected) throws Exception {
         SemValue self = val;
         if (lookahead == expected) {
             lookahead = lex();
@@ -57,7 +57,7 @@ public class Parser extends BaseParser {
     }
 
     /* parsers */
-    private SemValue parseE1() throws CompileError {
+    private SemValue parseE1() throws Exception {
         switch (lookahead) {
             case '+':
             {
@@ -70,9 +70,9 @@ public class Parser extends BaseParser {
                 params[0].terms.addAll(params[3].terms);
                 return params[0];
             }
-            case ')':
             case eof:
             case eos:
+            case ')':
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
@@ -81,13 +81,13 @@ public class Parser extends BaseParser {
             }
             default:
             {
-                String[] acc = {name('+'), name(')'), name('#')};
+                String[] acc = {name('+'), name('#'), name(')')};
                 throw error(name(lookahead), acc);
             }
         }
     }
 
-    private SemValue parseF() throws CompileError {
+    private SemValue parseF() throws Exception {
         switch (lookahead) {
             case '(':
             {
@@ -115,26 +115,7 @@ public class Parser extends BaseParser {
         }
     }
 
-    private SemValue parseS() throws CompileError {
-        switch (lookahead) {
-            case NUM:
-            case '(':
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = parseE();
-                tree = params[1].expr;
-                return params[0];
-            }
-            default:
-            {
-                String[] acc = {name(NUM), name('(')};
-                throw error(name(lookahead), acc);
-            }
-        }
-    }
-
-    private SemValue parseT1() throws CompileError {
+    private SemValue parseT1() throws Exception {
         switch (lookahead) {
             case '*':
             {
@@ -148,9 +129,9 @@ public class Parser extends BaseParser {
                 return params[0];
             }
             case '+':
-            case ')':
             case eof:
             case eos:
+            case ')':
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
@@ -159,13 +140,13 @@ public class Parser extends BaseParser {
             }
             default:
             {
-                String[] acc = {name('*'), name('+'), name(')'), name('#')};
+                String[] acc = {name('*'), name('+'), name('#'), name(')')};
                 throw error(name(lookahead), acc);
             }
         }
     }
 
-    private SemValue parseE() throws CompileError {
+    private SemValue parseE() throws Exception {
         switch (lookahead) {
             case NUM:
             case '(':
@@ -188,7 +169,7 @@ public class Parser extends BaseParser {
         }
     }
 
-    private SemValue parseT() throws CompileError {
+    private SemValue parseT() throws Exception {
         switch (lookahead) {
             case NUM:
             case '(':

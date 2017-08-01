@@ -3,7 +3,7 @@ package arith.error;
 import arith.Location;
 
 /**
- * 仅供Parser的yyerror函数使用
+ * Message error, used by parser.
  */
 public class MsgError extends CompileError {
 

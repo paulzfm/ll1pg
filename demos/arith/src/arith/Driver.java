@@ -8,6 +8,12 @@ import arith.error.CompileError;
 import arith.Lexer;
 import arith.Parser;
 
+/**
+ * Main class of demo `arith`.
+ *
+ * Input: an arithmetic expression consist of `+`, `*` and numbers.
+ * Output: the parsed AST and the evaluation result.
+ */
 public final class Driver {
 
 	private static Driver driver;

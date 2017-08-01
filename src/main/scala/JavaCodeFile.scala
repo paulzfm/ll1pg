@@ -9,11 +9,13 @@ import Utils._
   * The following methods should be implemented in the base class:
   * - `int lex()`: get next token (an integer) from lexer
   *
-  * - `void error(String token)`: handle syntax error when EOF or EOS expected, but `token` found
-  * - `void error(String token, String expected)`: handle syntax error when `expected` is expected
+  * - `T error(String token)`: handle syntax error when EOF or EOS expected, but `token` found
+  * - `T error(String token, String expected)`: handle syntax error when `expected` is expected
   * but `token` is found
-  * - `void error(String token, String[] acceptable)`: handle syntax error when one of `acceptable`
+  * - `T error(String token, String[] acceptable)`: handle syntax error when one of `acceptable`
   * token is acceptable but `token` is found
+  * Note that here `T` must be a subtype of `Exception`, presenting the compilation error to be
+  * thrown.
   *
   * The parser entry function is:
   * `semValue parse()`
@@ -25,14 +27,12 @@ import Utils._
   * @param cls      class name as well as heritages. (`class ... extends ... implements` in Java)
   * @param semValue a class to store semantic values, used as the return type for each
   *                 non-terminal parser.
-  * @param parseErr a class to store compile error information, used as the exception type
-  *                 thrown for each non-terminal parser.
   * @param start    starting symbol of CFG, used as the parser entry.
   * @param tokens   tokens (or terminals), will be obtained from the lexer.
   * @param parsers  all non-terminal parsers.
   */
 class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
-                   val semValue: SemValue, val parseErr: ParseError, val start: NonTerminal,
+                   val semValue: SemValue, val start: NonTerminal,
                    val tokens: List[Token],
                    val parsers: List[NonTerminalParser]) extends Printable {
   override def printTo(writer: IndentWriter): Unit = {
@@ -127,7 +127,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
   }
 
   private def printFuncParseTo(writer: IndentWriter): Unit = {
-    writer.writeLn(s"public $semValue parse() throws $parseErr {")
+    writer.writeLn(s"public $semValue parse() throws Exception {")
     writer.incIndent()
     writer.writeLn("if (lookahead < 0) {")
     writer.incIndent()
@@ -146,7 +146,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
   }
 
   private def printFuncMatchTokenTo(writer: IndentWriter): Unit = {
-    writer.writeLn(s"public $semValue matchToken(int expected) throws $parseErr {")
+    writer.writeLn(s"public $semValue matchToken(int expected) throws Exception {")
     writer.incIndent()
     writer.writeLn(s"$semValue self = val;")
     writer.writeLn("if (lookahead == expected) {")

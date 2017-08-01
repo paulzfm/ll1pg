@@ -31,7 +31,7 @@ object SpecAST {
         .replaceAll("[$]{2}", "params[0]"))
   }
 
-  case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start, ParseError),
+  case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start),
                   rules: List[Rule]) extends Node {
     override def printTo(writer: IndentWriter): Unit = {
       //      headers.foreach(_.printTo(writer))
@@ -49,15 +49,13 @@ object SpecAST {
     def tokens: List[Token] = headers._5.tokens
 
     def start: NonTerminal = headers._6.symbol
-
-    def err: ParseError = headers._7
   }
 
   def Spec(headers: (Tokens, Start), rules: List[Rule]): Spec = {
     val (tokens, start) = headers
     Spec(
       (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident("")),
-        tokens, start, ParseError(Ident(""))),
+        tokens, start),
       rules
     )
   }

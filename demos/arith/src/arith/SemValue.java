@@ -3,6 +3,9 @@ package arith;
 import arith.Expr;
 import java.util.ArrayList;
 
+/**
+ * Semantic value.
+ */
 public class SemValue {
     public Location loc;
 
