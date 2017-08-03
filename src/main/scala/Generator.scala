@@ -10,9 +10,9 @@ import scala.collection.mutable
   *
   * @param spec       specification illustrating the CFG.
   * @param strictMode option to decide whether assuming the CFG is strictlly LL(1) grammar,
-  *                   default value open.
+  *                   default value closed.
   */
-class Generator(spec: Spec, strictMode: Boolean = true) {
+class Generator(spec: Spec, strictMode: Boolean = false) {
   /**
     * Map non-terminals to their corresponding rules.
     */
