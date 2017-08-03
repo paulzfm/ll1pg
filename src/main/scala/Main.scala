@@ -1,3 +1,5 @@
+import scala.util.{Failure, Success}
+
 /**
   * Entry of parser generator.
   */
@@ -11,15 +13,16 @@ object Main {
     val source = scala.io.Source.fromFile(args(0))
     val lines = try source.mkString finally source.close()
 
-    for {
-      spec <- Parsers.parse(lines)
-    } yield {
-      val gen = new Generator(spec)
-      val code = gen.generate
-      val writer = new IndentWriter
-      code.printTo(writer)
-      writer.outputToFile(args(1))
+    Parsers.parse(lines) match {
+      case Success(spec) =>
+        val gen = new Generator(spec)
+        val code = gen.generate
+        val writer = new IndentWriter
+        code.printTo(writer)
+        writer.outputToFile(args(1))
+      case Failure(ex) => ex.printStackTrace()
     }
+
   }
 
 }

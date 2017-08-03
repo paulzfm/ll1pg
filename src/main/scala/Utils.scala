@@ -38,7 +38,12 @@ object Utils {
   /**
     * A map to store first and follow sets of sentences.
     */
-  type Table = mutable.HashMap[Sentence, Set[LASym]]
+  type HashTable = mutable.HashMap[Sentence, Set[LASym]]
+
+  /**
+    * A list to store lookahead symbols for each sentence.
+    */
+  type Table = List[(Sentence, Set[LASym])]
 
   /**
     * A list to store predictive sets.

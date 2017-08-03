@@ -20,10 +20,11 @@ class TestGenerator extends FunSuite {
     (Tokens(tokens.map(i => IdentToken(i.toString)).toList), Start(NonTerminal(start)))
 
   def checkTable(expected: List[(String, List[String])], table: Table): Unit = {
+    val t = table.toMap
     expected.foreach {
       case (s1, s2) =>
         val sentence = strToSentence(s1)
-        val ans = table(sentence).map {
+        val ans = t(sentence).map {
           case Epsilon => " "
           case Sharp => "#"
           case Term(IdentToken(Ident(s))) => s
@@ -31,6 +32,9 @@ class TestGenerator extends FunSuite {
         assert(ans.toList.sorted == s2.sorted)
     }
   }
+
+  def checkTable(expected: List[(String, List[String])], table: HashTable): Unit =
+    checkTable(expected, table.toMap.toList)
 
   {
     /* Grammar:

@@ -7,8 +7,12 @@ import scala.collection.mutable
   * Parser generator from the specification defined with `AST`.
   * This generator implements the algorithms to compute First Set, Follow Set and Predictive Set.
   * Parsers will be constructed according to the Predictive Set.
+  *
+  * @param spec       specification illustrating the CFG.
+  * @param strictMode option to decide whether assuming the CFG is strictlly LL(1) grammar,
+  *                   default value open.
   */
-class Generator(spec: Spec) {
+class Generator(spec: Spec, strictMode: Boolean = true) {
   /**
     * Map non-terminals to their corresponding rules.
     */
@@ -17,8 +21,8 @@ class Generator(spec: Spec) {
   /**
     * Map non-terminals to their corresponding sentences (right-hand sides).
     */
-  val sentencesMap: Map[NonTerminal, Set[Sentence]] =
-    rulesMap.mapValues(_.flatMap(_.rights).unzip._1.toSet)
+  val sentencesMap: Map[NonTerminal, List[Sentence]] =
+    rulesMap.mapValues(_.flatMap(_.rights).unzip._1)
 
   /**
     * Compute first set for all terminals, non-terminals, \epsilon (the empty sentence), and all
@@ -26,7 +30,7 @@ class Generator(spec: Spec) {
     *
     * @return a table presenting first sets.
     */
-  def computeFirstSet: Table = {
+  def computeFirstSet: HashTable = {
     // Suffix for production's right-hand side.
     val suffix = for {
       Rule(_, rs) <- spec.rules
@@ -39,7 +43,7 @@ class Generator(spec: Spec) {
     val sentences = (Nil :: spec.tokens.map(t => List(Terminal(t))) ++
       sentencesMap.keys.map(List(_)) ++ suffix).distinct
 
-    val first: Table = new mutable.HashMap[Sentence, Set[LASym]]
+    val first: HashTable = new mutable.HashMap[Sentence, Set[LASym]]
     // Initialize: first(x) = {x} if x is terminal or x is \epsilon.
     //             first(x) = {}  otherwise.
     sentences.foreach {
@@ -102,8 +106,8 @@ class Generator(spec: Spec) {
     * @param first a table presenting first sets.
     * @return a table presenting follow sets.
     */
-  def computeFollowSet(first: Table): Table = {
-    val follow: Table = new mutable.HashMap[Sentence, Set[LASym]]
+  def computeFollowSet(first: HashTable): HashTable = {
+    val follow: HashTable = new mutable.HashMap[Sentence, Set[LASym]]
     // Initialize.
     // 1. follow(S) = {#}
     follow.update(List(spec.start), Set(Sharp))
@@ -154,19 +158,18 @@ class Generator(spec: Spec) {
     * @return a list presenting predictive sets:
     *         e.g. item (A, table(a1 -> s1, a2 -> s2)) means PS(A -> a1) = s1 and PS(A -> a2) = s2.
     */
-  def computePredictiveSet(first: Table, follow: Table): PS =
+  def computePredictiveSet(first: HashTable, follow: HashTable): PS =
     sentencesMap.map {
       case (l, rs) =>
         val a = List(l)
-        val ps = new mutable.HashMap[Sentence, Set[LASym]]
-        rs.foreach {
+        val ps = rs.map {
           alpha =>
             if (first(alpha).contains(Epsilon)) { // \epsilon \in first(\alpha)
               // PS(a -> \alpha) = (first(\alpha) – {\epsilon}) + follow(a)
-              ps.update(alpha, first(alpha) - Epsilon ++ follow(a))
+              (alpha, first(alpha) - Epsilon ++ follow(a))
             } else { // \epsilon \not\in first(\alpha)
               // PS(a -> \alpha) = first(\alpha)
-              ps.update(alpha, first(alpha))
+              (alpha, first(alpha))
             }
         }
         (l, ps)
@@ -185,14 +188,14 @@ class Generator(spec: Spec) {
     else {
       val (l, t) :: ts = ps
       val results = for {
-        x <- t.keys
-        y <- t.keys
+        (x, tx) <- t
+        (y, ty) <- t
         if x != y
-        z = t(x) & t(y)
-      } yield (x, y, z.nonEmpty)
+        z = tx & ty
+      } yield (x, y, z.nonEmpty, tx, ty)
       results.find(_._3) match {
         case None => checkLL1(ts)
-        case Some((x, y, _)) => Some((l, x, t(x), y, t(y)))
+        case Some((x, y, _, tx, ty)) => Some((l, x, tx, y, ty))
       }
     }
 
@@ -207,6 +210,41 @@ class Generator(spec: Spec) {
     case Some((l, x, sx, y, sy)) => // failure
       throw new Exception(s"Not LL(1) grammar: PS($l -> $x) = $sx, PS($l -> $y) = $sy, " +
         "but their intersection is non empty")
+  }
+
+  /**
+    * In unstrict mode, if the given grammar is not LL(1), we reduce conflicts by specifying the
+    * precedence of the production being used.
+    *
+    * For example, grammar G[S]:
+    * - S -> if C t S E
+    * - E -> e S | `epsilon`
+    * is not LL(1), because PS(E -> e S) & PS(E -> `epsilon`) = {E} is non-empty.
+    * By always selecting `E -> e S` when `E` is the lookahead symbol, we solve the conflicts
+    * and substitute the new predictive set PS'(E -> `epsilon`) by PS(E -> `epsilon`) - {E},
+    * where now PS(E -> e S) & PS'(E -> `epsilon`) is empty.
+    *
+    * @param ps current predictive sets with potential conflicts.
+    * @return the transformed predictive sets without any conflict.
+    */
+  def transformLL1(ps: PS): PS = {
+    def deconflict(table: Table): Table = {
+      def iterate(table: Table, acc: Table, appeared: Set[LASym]): Table = table match {
+        case Nil => acc
+        case (s, symbols) :: ts => iterate(ts, acc :+ (s, symbols -- appeared), appeared ++ symbols)
+      }
+
+      iterate(table, Nil, Set())
+    }
+
+    ps.map {
+      case (l, t) =>
+        val t1 = deconflict(t)
+        if (t1 != t) {
+          Console.err.println(s"Warning: conflict sentences for productions $l -> ...")
+        }
+        (l, t1)
+    }
   }
 
   /**
@@ -237,7 +275,9 @@ class Generator(spec: Spec) {
     val first = computeFirstSet
     val follow = computeFollowSet(first)
     val ps = computePredictiveSet(first, follow)
-//    assertLL1(ps)
-    generateCode(ps)
+    if (strictMode) {
+      assertLL1(ps)
+      generateCode(ps)
+    } else generateCode(transformLL1(ps))
   }
 }
