@@ -206,7 +206,7 @@ class Generator(spec: Spec) {
     case None => // success
     case Some((l, x, sx, y, sy)) => // failure
       throw new Exception(s"Not LL(1) grammar: PS($l -> $x) = $sx, PS($l -> $y) = $sy, " +
-        s"but $sx & $sy is non empty")
+        "but their intersection is non empty")
   }
 
   /**
@@ -237,7 +237,7 @@ class Generator(spec: Spec) {
     val first = computeFirstSet
     val follow = computeFollowSet(first)
     val ps = computePredictiveSet(first, follow)
-    assertLL1(ps)
+//    assertLL1(ps)
     generateCode(ps)
   }
 }
