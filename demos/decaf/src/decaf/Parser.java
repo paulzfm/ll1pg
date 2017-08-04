@@ -1,6 +1,6 @@
 /* This is auto-generated Parser source by LL1-Parser-Gen.
- * Generated at: Thu Aug 03 17:34:11 CST 2017
- * Please do NOT modify it unless you know what you are doing!
+ * Generated at: Fri Aug 04 22:11:16 CST 2017
+ * Please do NOT modify it!
  *
  * Project repository: https://github.com/paulzfm/LL1-Parser-Gen
  * Author: Zhu Fengmin (Paul)
@@ -18,47 +18,47 @@ public class Parser extends BaseParser {
     public static final int eos = 0;
     public int lookahead = -1;
     public SemValue val = new SemValue();
-
+    
     /* tokens */
-    public static final int VOID = 257;
-    public static final int BOOL = 258;
-    public static final int INT = 259;
-    public static final int STRING = 260;
-    public static final int CLASS = 261;
-    public static final int NULL = 262;
-    public static final int EXTENDS = 263;
-    public static final int THIS = 264;
-    public static final int WHILE = 265;
-    public static final int FOR = 266;
-    public static final int IF = 267;
-    public static final int ELSE = 268;
-    public static final int RETURN = 269;
-    public static final int BREAK = 270;
-    public static final int NEW = 271;
-    public static final int PRINT = 272;
-    public static final int READ_INTEGER = 273;
-    public static final int READ_LINE = 274;
-    public static final int LITERAL = 275;
-    public static final int IDENTIFIER = 276;
-    public static final int AND = 277;
-    public static final int OR = 278;
-    public static final int STATIC = 279;
-    public static final int INSTANCEOF = 280;
-    public static final int LESS_EQUAL = 281;
-    public static final int GREATER_EQUAL = 282;
-    public static final int EQUAL = 283;
-    public static final int NOT_EQUAL = 284;
-
+    public static final int VOID = 257; //# line 13
+    public static final int BOOL = 258; //# line 13
+    public static final int INT = 259; //# line 13
+    public static final int STRING = 260; //# line 13
+    public static final int CLASS = 261; //# line 13
+    public static final int NULL = 262; //# line 14
+    public static final int EXTENDS = 263; //# line 14
+    public static final int THIS = 264; //# line 14
+    public static final int WHILE = 265; //# line 14
+    public static final int FOR = 266; //# line 14
+    public static final int IF = 267; //# line 15
+    public static final int ELSE = 268; //# line 15
+    public static final int RETURN = 269; //# line 15
+    public static final int BREAK = 270; //# line 15
+    public static final int NEW = 271; //# line 15
+    public static final int PRINT = 272; //# line 16
+    public static final int READ_INTEGER = 273; //# line 16
+    public static final int READ_LINE = 274; //# line 16
+    public static final int LITERAL = 275; //# line 17
+    public static final int IDENTIFIER = 276; //# line 18
+    public static final int AND = 277; //# line 18
+    public static final int OR = 278; //# line 18
+    public static final int STATIC = 279; //# line 18
+    public static final int INSTANCEOF = 280; //# line 18
+    public static final int LESS_EQUAL = 281; //# line 19
+    public static final int GREATER_EQUAL = 282; //# line 19
+    public static final int EQUAL = 283; //# line 19
+    public static final int NOT_EQUAL = 284; //# line 19
+    
     /* search token name */
     String[] tokens = {
-            "VOID", "BOOL", "INT", "STRING", "CLASS",
-            "NULL", "EXTENDS", "THIS", "WHILE", "FOR",
-            "IF", "ELSE", "RETURN", "BREAK", "NEW",
-            "PRINT", "READ_INTEGER", "READ_LINE", "LITERAL", "IDENTIFIER",
-            "AND", "OR", "STATIC", "INSTANCEOF", "LESS_EQUAL",
-            "GREATER_EQUAL", "EQUAL", "NOT_EQUAL",
+        "VOID", "BOOL", "INT", "STRING", "CLASS",
+        "NULL", "EXTENDS", "THIS", "WHILE", "FOR",
+        "IF", "ELSE", "RETURN", "BREAK", "NEW",
+        "PRINT", "READ_INTEGER", "READ_LINE", "LITERAL", "IDENTIFIER",
+        "AND", "OR", "STATIC", "INSTANCEOF", "LESS_EQUAL",
+        "GREATER_EQUAL", "EQUAL", "NOT_EQUAL",
     };
-
+    
     private String name(int token) {
         if (token >= 0 && token <= 256) {
             return "'" + (char) token + "'";
@@ -66,7 +66,7 @@ public class Parser extends BaseParser {
             return tokens[token - 257];
         }
     }
-
+    
     public SemValue parse() throws Exception {
         if (lookahead < 0) {
             lookahead = lex();
@@ -77,7 +77,7 @@ public class Parser extends BaseParser {
         }
         return result;
     }
-
+    
     public SemValue matchToken(int expected) throws Exception {
         SemValue self = val;
         if (lookahead == expected) {
@@ -87,8 +87,9 @@ public class Parser extends BaseParser {
         }
         return self;
     }
-
+    
     /* parsers */
+    //# line 48
     private SemValue parseVariableDef() throws Exception {
         switch (lookahead) {
             case VOID:
@@ -101,6 +102,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseVariable();
                 params[2] = matchToken(';');
+                //# line 49
                 params[0].vdef = params[1].vdef;
                 return params[0];
             }
@@ -111,7 +113,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 485
     private SemValue parseExprT5() throws Exception {
         switch (lookahead) {
             case '+':
@@ -122,6 +125,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper5();
                 params[2] = parseExpr6();
                 params[3] = parseExprT5();
+                //# line 486
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -151,7 +155,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -161,35 +165,39 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 275
     private SemValue parseOper3() throws Exception {
         switch (lookahead) {
-            case NOT_EQUAL:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(NOT_EQUAL);
-                params[0].counter = Tree.NE;
-                params[0].loc = params[1].loc;
-                return params[0];
-            }
             case EQUAL:
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(EQUAL);
+                //# line 276
                 params[0].counter = Tree.EQ;
+                params[0].loc = params[1].loc;
+                return params[0];
+            }
+            case NOT_EQUAL:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(NOT_EQUAL);
+                //# line 281
+                params[0].counter = Tree.NE;
                 params[0].loc = params[1].loc;
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(NOT_EQUAL), name(EQUAL)};
+                String[] acc = {name(EQUAL), name(NOT_EQUAL)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 321
     private SemValue parseOper6() throws Exception {
         switch (lookahead) {
             case '*':
@@ -197,6 +205,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('*');
+                //# line 322
                 params[0].counter = Tree.MUL;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -206,6 +215,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('/');
+                //# line 327
                 params[0].counter = Tree.DIV;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -215,6 +225,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('%');
+                //# line 332
                 params[0].counter = Tree.MOD;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -226,7 +237,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 164
     private SemValue parseVariableList() throws Exception {
         switch (lookahead) {
             case VOID:
@@ -239,6 +251,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseVariable();
                 params[2] = parseSubVariableList();
+                //# line 165
                 params[0].vlist = new ArrayList<VarDef>();
                 params[0].vlist.add(params[1].vdef);
                 if (params[2].vlist != null) {
@@ -253,7 +266,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 154
     private SemValue parseFormals() throws Exception {
         switch (lookahead) {
             case VOID:
@@ -265,6 +279,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseVariableList();
+                //# line 155
                 params[0].vlist = params[1].vlist;
                 return params[0];
             }
@@ -272,6 +287,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
+                //# line 159
                 params[0].vlist = new ArrayList<VarDef>();
                 return params[0];
             }
@@ -282,35 +298,39 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 338
     private SemValue parseOper7() throws Exception {
         switch (lookahead) {
-            case '!':
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken('!');
-                params[0].counter = Tree.NOT;
-                params[0].loc = params[1].loc;
-                return params[0];
-            }
             case '-':
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('-');
+                //# line 339
                 params[0].counter = Tree.NEG;
+                params[0].loc = params[1].loc;
+                return params[0];
+            }
+            case '!':
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken('!');
+                //# line 344
+                params[0].counter = Tree.NOT;
                 params[0].loc = params[1].loc;
                 return params[0];
             }
             default:
             {
-                String[] acc = {name('!'), name('-')};
+                String[] acc = {name('-'), name('!')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 541
     private SemValue parseExpr8() throws Exception {
         switch (lookahead) {
             case READ_LINE:
@@ -327,11 +347,20 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr9();
                 params[2] = parseExprT8();
+                //# line 542
                 params[0].expr = params[1].expr;
-                if (params[2].svec != null) {
-                    for (int i = 0; i < params[2].svec.size(); ++i) {
-                        params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                params[0].loc = params[1].loc;
+                if (params[2].vec != null) {
+                    for (SemValue v : params[2].vec) {
+                        if (v.expr != null) {
+                            params[0].expr = new Tree.Indexed(params[0].expr, v.expr, params[0].loc);
+                        } else if (v.elist != null) {
+                            params[0].expr = new Tree.CallExpr(params[0].expr, v.ident, v.elist, v.loc);
+                            params[0].loc = v.loc;
+                        } else {
+                            params[0].expr = new Tree.Ident(params[0].expr, v.ident, v.loc);
+                            params[0].loc = v.loc;
+                        }
                     }
                 }
                 return params[0];
@@ -343,9 +372,22 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 649
     private SemValue parseAfterSimpleTypeExpr() throws Exception {
         switch (lookahead) {
+            case ']':
+            {
+                SemValue[] params = new SemValue[4];
+                params[0] = new SemValue();
+                params[1] = matchToken(']');
+                params[2] = matchToken('[');
+                params[3] = parseAfterSimpleTypeExpr();
+                //# line 650
+                params[0].expr = params[3].expr;
+                params[0].counter = 1 + params[3].counter;
+                return params[0];
+            }
             case '!':
             case '-':
             case READ_LINE:
@@ -362,29 +404,20 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr();
                 params[2] = matchToken(']');
+                //# line 655
                 params[0].expr = params[1].expr;
                 params[0].counter = 0;
                 return params[0];
             }
-            case ']':
-            {
-                SemValue[] params = new SemValue[4];
-                params[0] = new SemValue();
-                params[1] = matchToken(']');
-                params[2] = matchToken('[');
-                params[3] = parseAfterSimpleTypeExpr();
-                params[0].expr = params[3].expr;
-                params[0].counter = 1 + params[3].counter;
-                return params[0];
-            }
             default:
             {
-                String[] acc = {name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER), name(']')};
+                String[] acc = {name(']'), name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 386
     private SemValue parseExpr2() throws Exception {
         switch (lookahead) {
             case '!':
@@ -403,11 +436,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr3();
                 params[2] = parseExprT2();
+                //# line 387
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -419,7 +453,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 268
     private SemValue parseOper2() throws Exception {
         switch (lookahead) {
             case AND:
@@ -427,6 +462,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(AND);
+                //# line 269
                 params[0].counter = Tree.AND;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -438,7 +474,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 502
     private SemValue parseExpr6() throws Exception {
         switch (lookahead) {
             case '!':
@@ -457,11 +494,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr7();
                 params[2] = parseExprT6();
+                //# line 503
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -473,7 +511,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 726
     private SemValue parseBreakStmt() throws Exception {
         switch (lookahead) {
             case BREAK:
@@ -481,6 +520,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(BREAK);
+                //# line 727
                 params[0].stmt = new Tree.Break(params[1].loc);
                 return params[0];
             }
@@ -491,7 +531,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 398
     private SemValue parseExprT2() throws Exception {
         switch (lookahead) {
             case AND:
@@ -501,6 +542,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper2();
                 params[2] = parseExpr3();
                 params[3] = parseExprT2();
+                //# line 399
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -523,7 +565,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -533,7 +575,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 191
     private SemValue parseStmtList() throws Exception {
         switch (lookahead) {
             case PRINT:
@@ -565,6 +608,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseStmt();
                 params[2] = parseStmtList();
+                //# line 192
                 params[0].slist.add(params[1].stmt);
                 params[0].slist.addAll(params[2].slist);
                 return params[0];
@@ -573,7 +617,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -583,33 +627,37 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 673
     private SemValue parseConstant() throws Exception {
         switch (lookahead) {
-            case NULL:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(NULL);
-                params[0].expr = new Null(params[1].loc);
-                return params[0];
-            }
             case LITERAL:
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(LITERAL);
+                //# line 674
                 params[0].expr = new Tree.Literal(params[1].typeTag, params[1].literal, params[1].loc);
+                return params[0];
+            }
+            case NULL:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(NULL);
+                //# line 678
+                params[0].expr = new Null(params[1].loc);
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(NULL), name(LITERAL)};
+                String[] acc = {name(LITERAL), name(NULL)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 174
     private SemValue parseSubVariableList() throws Exception {
         switch (lookahead) {
             case ',':
@@ -619,6 +667,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken(',');
                 params[2] = parseVariable();
                 params[3] = parseSubVariableList();
+                //# line 175
                 params[0].vlist = new ArrayList<VarDef>();
                 params[0].vlist.add(params[2].vdef);
                 if (params[3].vlist != null) {
@@ -630,7 +679,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -640,7 +689,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 758
     private SemValue parsePrintStmt() throws Exception {
         switch (lookahead) {
             case PRINT:
@@ -651,6 +701,7 @@ public class Parser extends BaseParser {
                 params[2] = matchToken('(');
                 params[3] = parseExprList();
                 params[4] = matchToken(')');
+                //# line 759
                 params[0].stmt = new Tree.Print(params[3].elist, params[1].loc);
                 return params[0];
             }
@@ -661,7 +712,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 720
     private SemValue parseForStmt() throws Exception {
         switch (lookahead) {
             case FOR:
@@ -677,6 +729,7 @@ public class Parser extends BaseParser {
                 params[7] = parseSimpleStmt();
                 params[8] = matchToken(')');
                 params[9] = parseStmt();
+                //# line 721
                 params[0].stmt = new Tree.ForLoop(params[3].stmt, params[5].expr, params[7].stmt, params[9].stmt, params[1].loc);
                 return params[0];
             }
@@ -687,7 +740,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 593
     private SemValue parseExpr9() throws Exception {
         switch (lookahead) {
             case LITERAL:
@@ -696,7 +750,53 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseConstant();
+                //# line 594
                 params[0].expr = params[1].expr;
+                return params[0];
+            }
+            case READ_INTEGER:
+            {
+                SemValue[] params = new SemValue[4];
+                params[0] = new SemValue();
+                params[1] = matchToken(READ_INTEGER);
+                params[2] = matchToken('(');
+                params[3] = matchToken(')');
+                //# line 598
+                params[0].expr = new Tree.ReadIntExpr(params[1].loc);
+                return params[0];
+            }
+            case READ_LINE:
+            {
+                SemValue[] params = new SemValue[4];
+                params[0] = new SemValue();
+                params[1] = matchToken(READ_LINE);
+                params[2] = matchToken('(');
+                params[3] = matchToken(')');
+                //# line 602
+                params[0].expr = new Tree.ReadLineExpr(params[1].loc);
+                return params[0];
+            }
+            case THIS:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(THIS);
+                //# line 606
+                params[0].expr = new Tree.ThisExpr(params[1].loc);
+                return params[0];
+            }
+            case NEW:
+            {
+                SemValue[] params = new SemValue[3];
+                params[0] = new SemValue();
+                params[1] = matchToken(NEW);
+                params[2] = parseAfterNewExpr();
+                //# line 610
+                if (params[2].ident != null) {
+                    params[0].expr = new Tree.NewClass(params[2].ident, params[1].loc);
+                } else {
+                    params[0].expr = new Tree.NewArray(params[2].type, params[2].expr, params[1].loc);
+                }
                 return params[0];
             }
             case INSTANCEOF:
@@ -709,51 +809,8 @@ public class Parser extends BaseParser {
                 params[4] = matchToken(',');
                 params[5] = matchToken(IDENTIFIER);
                 params[6] = matchToken(')');
+                //# line 618
                 params[0].expr = new Tree.TypeTest(params[3].expr, params[5].ident, params[1].loc);
-                return params[0];
-            }
-            case IDENTIFIER:
-            {
-                SemValue[] params = new SemValue[3];
-                params[0] = new SemValue();
-                params[1] = matchToken(IDENTIFIER);
-                params[2] = parseAfterIdentExpr();
-                if (params[2].elist != null) {
-                    params[0].expr = new Tree.CallExpr(null, params[1].ident, params[2].elist, params[1].loc);
-                } else {
-                    params[0].expr = new Tree.Ident(null, params[1].ident, params[1].loc);
-                }
-                return params[0];
-            }
-            case THIS:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(THIS);
-                params[0].expr = new Tree.ThisExpr(params[1].loc);
-                return params[0];
-            }
-            case READ_INTEGER:
-            {
-                SemValue[] params = new SemValue[4];
-                params[0] = new SemValue();
-                params[1] = matchToken(READ_INTEGER);
-                params[2] = matchToken('(');
-                params[3] = matchToken(')');
-                params[0].expr = new Tree.ReadIntExpr(params[1].loc);
-                return params[0];
-            }
-            case NEW:
-            {
-                SemValue[] params = new SemValue[3];
-                params[0] = new SemValue();
-                params[1] = matchToken(NEW);
-                params[2] = parseAfterNewExpr();
-                if (params[2].ident != null) {
-                    params[0].expr = new Tree.NewClass(params[2].ident, params[1].loc);
-                } else {
-                    params[0].expr = new Tree.NewArray(params[2].type, params[2].expr, params[1].loc);
-                }
                 return params[0];
             }
             case '(':
@@ -762,27 +819,33 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken('(');
                 params[2] = parseAfterParenExpr();
+                //# line 622
                 params[0].expr = params[2].expr;
                 return params[0];
             }
-            case READ_LINE:
+            case IDENTIFIER:
             {
-                SemValue[] params = new SemValue[4];
+                SemValue[] params = new SemValue[3];
                 params[0] = new SemValue();
-                params[1] = matchToken(READ_LINE);
-                params[2] = matchToken('(');
-                params[3] = matchToken(')');
-                params[0].expr = new Tree.ReadLineExpr(params[1].loc);
+                params[1] = matchToken(IDENTIFIER);
+                params[2] = parseAfterIdentExpr();
+                //# line 626
+                if (params[2].elist != null) {
+                    params[0].expr = new Tree.CallExpr(null, params[1].ident, params[2].elist, params[1].loc);
+                } else {
+                    params[0].expr = new Tree.Ident(null, params[1].ident, params[1].loc);
+                }
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(LITERAL), name(NULL), name(INSTANCEOF), name(IDENTIFIER), name(THIS), name(READ_INTEGER), name(NEW), name('('), name(READ_LINE)};
+                String[] acc = {name(LITERAL), name(NULL), name(READ_INTEGER), name(READ_LINE), name(THIS), name(NEW), name(INSTANCEOF), name('('), name(IDENTIFIER)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 357
     private SemValue parseExpr1() throws Exception {
         switch (lookahead) {
             case '!':
@@ -801,11 +864,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr2();
                 params[2] = parseExprT1();
+                //# line 358
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -817,7 +881,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 261
     private SemValue parseOper1() throws Exception {
         switch (lookahead) {
             case OR:
@@ -825,6 +890,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(OR);
+                //# line 262
                 params[0].counter = Tree.OR;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -836,7 +902,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 738
     private SemValue parseElseClause() throws Exception {
         switch (lookahead) {
             case ELSE:
@@ -845,6 +912,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken(ELSE);
                 params[2] = parseStmt();
+                //# line 739
                 params[0].stmt = params[2].stmt;
                 return params[0];
             }
@@ -876,26 +944,20 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(ELSE), name(PRINT), name(VOID), name(FOR), name('!'), name('-'), name(CLASS), name(READ_LINE), name(WHILE), name(RETURN), name(NULL), name(INT), name('}'), name(IDENTIFIER), name(NEW), name(IF), name(THIS), name(INSTANCEOF), name(STRING), name(LITERAL), name(ELSE), name('('), name(';'), name(BOOL), name(BREAK), name(READ_INTEGER), name('{')};
+                String[] acc = {name(ELSE), name(PRINT), name(VOID), name(FOR), name('!'), name('-'), name(CLASS), name(READ_LINE), name(WHILE), name(RETURN), name(NULL), name(INT), name('}'), name(IDENTIFIER), name(NEW), name(IF), name(THIS), name(INSTANCEOF), name(STRING), name(LITERAL), name('('), name(';'), name(BOOL), name(BREAK), name(READ_INTEGER), name('{')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 114
     private SemValue parseFieldList() throws Exception {
         switch (lookahead) {
-            case '}':
-            {
-                SemValue[] params = new SemValue[1];
-                params[0] = new SemValue();
-                params[0].flist = new ArrayList<Tree>();
-                return params[0];
-            }
             case VOID:
             case CLASS:
             case INT:
@@ -907,6 +969,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseField();
                 params[2] = parseFieldList();
+                //# line 115
                 params[0].flist = new ArrayList<Tree>();
                 if (params[1].vdef != null) {
                     params[0].flist.add(params[1].vdef);
@@ -916,14 +979,23 @@ public class Parser extends BaseParser {
                 params[0].flist.addAll(params[2].flist);
                 return params[0];
             }
+            case '}':
+            {
+                SemValue[] params = new SemValue[1];
+                params[0] = new SemValue();
+                //# line 125
+                params[0].flist = new ArrayList<Tree>();
+                return params[0];
+            }
             default:
             {
-                String[] acc = {name('}'), name(VOID), name(CLASS), name(INT), name(STRING), name(STATIC), name(BOOL)};
+                String[] acc = {name(VOID), name(CLASS), name(INT), name(STRING), name(STATIC), name(BOOL), name('}')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 701
     private SemValue parseSubExprList() throws Exception {
         switch (lookahead) {
             case ',':
@@ -933,6 +1005,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken(',');
                 params[2] = parseExpr();
                 params[3] = parseSubExprList();
+                //# line 702
                 params[0].elist = new ArrayList<Tree.Expr>();
                 params[0].elist.add(params[2].expr);
                 params[0].elist.addAll(params[3].elist);
@@ -942,6 +1015,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
+                //# line 708
                 params[0].elist = new ArrayList<Tree.Expr>();
                 return params[0];
             }
@@ -952,20 +1026,10 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 661
     private SemValue parseAfterParenExpr() throws Exception {
         switch (lookahead) {
-            case CLASS:
-            {
-                SemValue[] params = new SemValue[5];
-                params[0] = new SemValue();
-                params[1] = matchToken(CLASS);
-                params[2] = matchToken(IDENTIFIER);
-                params[3] = matchToken(')');
-                params[4] = parseExpr9();
-                params[0].expr = new Tree.TypeCast(params[2].ident, params[4].expr, params[4].loc);
-                return params[0];
-            }
             case '!':
             case '-':
             case READ_LINE:
@@ -982,17 +1046,31 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr();
                 params[2] = matchToken(')');
+                //# line 662
                 params[0].expr = params[1].expr;
+                return params[0];
+            }
+            case CLASS:
+            {
+                SemValue[] params = new SemValue[5];
+                params[0] = new SemValue();
+                params[1] = matchToken(CLASS);
+                params[2] = matchToken(IDENTIFIER);
+                params[3] = matchToken(')');
+                params[4] = parseExpr9();
+                //# line 666
+                params[0].expr = new Tree.TypeCast(params[2].ident, params[4].expr, params[4].loc);
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(CLASS), name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER)};
+                String[] acc = {name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER), name(CLASS)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 101
     private SemValue parseClassDef() throws Exception {
         switch (lookahead) {
             case CLASS:
@@ -1005,6 +1083,7 @@ public class Parser extends BaseParser {
                 params[4] = matchToken('{');
                 params[5] = parseFieldList();
                 params[6] = matchToken('}');
+                //# line 102
                 params[0].cdef = new Tree.ClassDef(params[2].ident, params[3].ident, params[5].flist, params[1].loc);
                 return params[0];
             }
@@ -1015,7 +1094,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 745
     private SemValue parseReturnStmt() throws Exception {
         switch (lookahead) {
             case RETURN:
@@ -1024,6 +1104,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken(RETURN);
                 params[2] = parseReturnExpr();
+                //# line 746
                 params[0].stmt = new Tree.Return(params[2].expr, params[1].loc);
                 return params[0];
             }
@@ -1034,7 +1115,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 693
     private SemValue parseExprList() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1053,6 +1135,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr();
                 params[2] = parseSubExprList();
+                //# line 694
                 params[0].elist = new ArrayList<Tree.Expr>();
                 params[0].elist.add(params[1].expr);
                 params[0].elist.addAll(params[2].elist);
@@ -1065,7 +1148,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 185
     private SemValue parseStmtBlock() throws Exception {
         switch (lookahead) {
             case '{':
@@ -1075,6 +1159,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken('{');
                 params[2] = parseStmtList();
                 params[3] = matchToken('}');
+                //# line 186
                 params[0].stmt = new Tree.Block(params[2].slist, params[1].loc);
                 return params[0];
             }
@@ -1085,7 +1170,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 146
     private SemValue parseFunctionField() throws Exception {
         switch (lookahead) {
             case '(':
@@ -1096,6 +1182,7 @@ public class Parser extends BaseParser {
                 params[2] = parseFormals();
                 params[3] = matchToken(')');
                 params[4] = parseStmtBlock();
+                //# line 147
                 params[0].vlist = params[2].vlist;
                 params[0].stmt = params[4].stmt;
                 return params[0];
@@ -1105,7 +1192,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(';');
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1115,7 +1202,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 586
     private SemValue parseAfterIdentExpr() throws Exception {
         switch (lookahead) {
             case '(':
@@ -1125,6 +1213,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken('(');
                 params[2] = parseActuals();
                 params[3] = matchToken(')');
+                //# line 587
                 params[0].elist = params[2].elist;
                 return params[0];
             }
@@ -1151,7 +1240,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1161,7 +1250,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 26
     private SemValue parseProgram() throws Exception {
         switch (lookahead) {
             case CLASS:
@@ -1170,6 +1260,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseClassDef();
                 params[2] = parseClassList();
+                //# line 27
                 params[0].clist = new ArrayList<ClassDef>();
                 params[0].clist.add(params[1].cdef);
                 if (params[2].clist != null) {
@@ -1185,7 +1276,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 351
     private SemValue parseExpr() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1203,6 +1295,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseExpr1();
+                //# line 352
                 params[0].expr = params[1].expr;
                 return params[0];
             }
@@ -1213,7 +1306,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 82
     private SemValue parseType() throws Exception {
         switch (lookahead) {
             case VOID:
@@ -1226,6 +1320,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseSimpleType();
                 params[2] = parseArrayType();
+                //# line 83
                 params[0].type = params[1].type;
                 for (int i = 0; i < params[2].counter; ++i) {
                     params[0].type = new Tree.TypeArray(params[0].type, params[1].loc);
@@ -1239,7 +1334,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 473
     private SemValue parseExpr5() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1258,11 +1354,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr6();
                 params[2] = parseExprT5();
+                //# line 474
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -1274,7 +1371,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 635
     private SemValue parseAfterNewExpr() throws Exception {
         switch (lookahead) {
             case IDENTIFIER:
@@ -1284,6 +1382,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken(IDENTIFIER);
                 params[2] = matchToken('(');
                 params[3] = matchToken(')');
+                //# line 636
                 params[0].ident = params[1].ident;
                 return params[0];
             }
@@ -1298,6 +1397,7 @@ public class Parser extends BaseParser {
                 params[1] = parseSimpleType();
                 params[2] = matchToken('[');
                 params[3] = parseAfterSimpleTypeExpr();
+                //# line 640
                 params[0].type = params[1].type;
                 for (int i = 0; i < params[3].counter; ++i) {
                     params[0].type = new Tree.TypeArray(params[0].type, params[1].loc);
@@ -1312,7 +1412,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 252
     private SemValue parseAssignment() throws Exception {
         switch (lookahead) {
             case '=':
@@ -1321,6 +1422,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken('=');
                 params[2] = parseExpr();
+                //# line 253
                 params[0].loc = params[1].loc;
                 params[0].expr = params[2].expr;
                 return params[0];
@@ -1330,7 +1432,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1340,7 +1442,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 107
     private SemValue parseExtendsClause() throws Exception {
         switch (lookahead) {
             case EXTENDS:
@@ -1349,6 +1452,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken(EXTENDS);
                 params[2] = matchToken(IDENTIFIER);
+                //# line 108
                 params[0].ident = params[2].ident;
                 return params[0];
             }
@@ -1356,7 +1460,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1366,35 +1470,39 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 309
     private SemValue parseOper5() throws Exception {
         switch (lookahead) {
-            case '-':
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken('-');
-                params[0].counter = Tree.MINUS;
-                params[0].loc = params[1].loc;
-                return params[0];
-            }
             case '+':
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('+');
+                //# line 310
                 params[0].counter = Tree.PLUS;
+                params[0].loc = params[1].loc;
+                return params[0];
+            }
+            case '-':
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken('-');
+                //# line 315
+                params[0].counter = Tree.MINUS;
                 params[0].loc = params[1].loc;
                 return params[0];
             }
             default:
             {
-                String[] acc = {name('-'), name('+')};
+                String[] acc = {name('+'), name('-')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 91
     private SemValue parseArrayType() throws Exception {
         switch (lookahead) {
             case '[':
@@ -1404,6 +1512,7 @@ public class Parser extends BaseParser {
                 params[1] = matchToken('[');
                 params[2] = matchToken(']');
                 params[3] = parseArrayType();
+                //# line 92
                 params[0].counter = 1 + params[3].counter;
                 return params[0];
             }
@@ -1411,6 +1520,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
+                //# line 96
                 params[0].counter = 0;
                 return params[0];
             }
@@ -1421,7 +1531,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 415
     private SemValue parseExpr3() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1440,11 +1551,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr4();
                 params[2] = parseExprT3();
+                //# line 416
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -1456,7 +1568,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 683
     private SemValue parseActuals() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1474,6 +1587,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseExprList();
+                //# line 684
                 params[0].elist = params[1].elist;
                 return params[0];
             }
@@ -1481,6 +1595,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
+                //# line 688
                 params[0].elist = new ArrayList<Tree.Expr>();
                 return params[0];
             }
@@ -1491,7 +1606,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 54
     private SemValue parseVariable() throws Exception {
         switch (lookahead) {
             case VOID:
@@ -1504,6 +1620,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseType();
                 params[2] = matchToken(IDENTIFIER);
+                //# line 55
                 params[0].vdef = new Tree.VarDef(params[2].ident, params[1].type, params[2].loc);
                 return params[0];
             }
@@ -1514,7 +1631,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 427
     private SemValue parseExprT3() throws Exception {
         switch (lookahead) {
             case EQUAL:
@@ -1525,6 +1643,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper3();
                 params[2] = parseExpr4();
                 params[3] = parseExprT3();
+                //# line 428
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -1548,7 +1667,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1558,15 +1677,21 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 199
     private SemValue parseStmt() throws Exception {
         switch (lookahead) {
-            case WHILE:
+            case VOID:
+            case CLASS:
+            case INT:
+            case STRING:
+            case BOOL:
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
-                params[1] = parseWhileStmt();
-                params[0].stmt = params[1].stmt;
+                params[1] = parseVariableDef();
+                //# line 200
+                params[0].stmt = params[1].vdef;
                 return params[0];
             }
             case '!':
@@ -1586,6 +1711,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseSimpleStmt();
                 params[2] = matchToken(';');
+                //# line 204
                 if (params[1].stmt == null) {
                     params[0].stmt = new Tree.Skip(params[2].loc);
                 } else {
@@ -1593,33 +1719,30 @@ public class Parser extends BaseParser {
                 }
                 return params[0];
             }
-            case VOID:
-            case CLASS:
-            case INT:
-            case STRING:
-            case BOOL:
+            case IF:
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
-                params[1] = parseVariableDef();
-                params[0].stmt = params[1].vdef;
-                return params[0];
-            }
-            case PRINT:
-            {
-                SemValue[] params = new SemValue[3];
-                params[0] = new SemValue();
-                params[1] = parsePrintStmt();
-                params[2] = matchToken(';');
+                params[1] = parseIfStmt();
+                //# line 212
                 params[0].stmt = params[1].stmt;
                 return params[0];
             }
-            case BREAK:
+            case WHILE:
             {
-                SemValue[] params = new SemValue[3];
+                SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
-                params[1] = parseBreakStmt();
-                params[2] = matchToken(';');
+                params[1] = parseWhileStmt();
+                //# line 216
+                params[0].stmt = params[1].stmt;
+                return params[0];
+            }
+            case FOR:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = parseForStmt();
+                //# line 220
                 params[0].stmt = params[1].stmt;
                 return params[0];
             }
@@ -1629,6 +1752,27 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseReturnStmt();
                 params[2] = matchToken(';');
+                //# line 224
+                params[0].stmt = params[1].stmt;
+                return params[0];
+            }
+            case PRINT:
+            {
+                SemValue[] params = new SemValue[3];
+                params[0] = new SemValue();
+                params[1] = parsePrintStmt();
+                params[2] = matchToken(';');
+                //# line 228
+                params[0].stmt = params[1].stmt;
+                return params[0];
+            }
+            case BREAK:
+            {
+                SemValue[] params = new SemValue[3];
+                params[0] = new SemValue();
+                params[1] = parseBreakStmt();
+                params[2] = matchToken(';');
+                //# line 232
                 params[0].stmt = params[1].stmt;
                 return params[0];
             }
@@ -1637,33 +1781,19 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseStmtBlock();
-                params[0].stmt = params[1].stmt;
-                return params[0];
-            }
-            case IF:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = parseIfStmt();
-                params[0].stmt = params[1].stmt;
-                return params[0];
-            }
-            case FOR:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = parseForStmt();
+                //# line 236
                 params[0].stmt = params[1].stmt;
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(WHILE), name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(';'), name(READ_INTEGER), name(VOID), name(CLASS), name(INT), name(STRING), name(BOOL), name(PRINT), name(BREAK), name(RETURN), name('{'), name(IF), name(FOR)};
+                String[] acc = {name(VOID), name(CLASS), name(INT), name(STRING), name(BOOL), name('!'), name('-'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(';'), name(READ_INTEGER), name(IF), name(WHILE), name(FOR), name(RETURN), name(PRINT), name(BREAK), name('{')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 241
     private SemValue parseSimpleStmt() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1682,6 +1812,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr();
                 params[2] = parseAssignment();
+                //# line 242
                 if (params[2].expr == null) {
                     params[0].stmt = new Tree.Calculate(params[1].expr, params[1].loc);
                 } else {
@@ -1694,7 +1825,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1704,15 +1835,44 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 60
     private SemValue parseSimpleType() throws Exception {
         switch (lookahead) {
+            case INT:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(INT);
+                //# line 61
+                params[0].type = new Tree.TypeIdent(Tree.INT, params[1].loc);
+                return params[0];
+            }
+            case VOID:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(VOID);
+                //# line 65
+                params[0].type = new Tree.TypeIdent(Tree.VOID, params[1].loc);
+                return params[0];
+            }
             case BOOL:
             {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(BOOL);
+                //# line 69
                 params[0].type = new Tree.TypeIdent(Tree.BOOL, params[1].loc);
+                return params[0];
+            }
+            case STRING:
+            {
+                SemValue[] params = new SemValue[2];
+                params[0] = new SemValue();
+                params[1] = matchToken(STRING);
+                //# line 73
+                params[0].type = new Tree.TypeIdent(Tree.STRING, params[1].loc);
                 return params[0];
             }
             case CLASS:
@@ -1721,41 +1881,19 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = matchToken(CLASS);
                 params[2] = matchToken(IDENTIFIER);
+                //# line 77
                 params[0].type = new Tree.TypeClass(params[2].ident, params[1].loc);
-                return params[0];
-            }
-            case VOID:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(VOID);
-                params[0].type = new Tree.TypeIdent(Tree.VOID, params[1].loc);
-                return params[0];
-            }
-            case INT:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(INT);
-                params[0].type = new Tree.TypeIdent(Tree.INT, params[1].loc);
-                return params[0];
-            }
-            case STRING:
-            {
-                SemValue[] params = new SemValue[2];
-                params[0] = new SemValue();
-                params[1] = matchToken(STRING);
-                params[0].type = new Tree.TypeIdent(Tree.STRING, params[1].loc);
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(BOOL), name(CLASS), name(VOID), name(INT), name(STRING)};
+                String[] acc = {name(INT), name(VOID), name(BOOL), name(STRING), name(CLASS)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 714
     private SemValue parseWhileStmt() throws Exception {
         switch (lookahead) {
             case WHILE:
@@ -1767,6 +1905,7 @@ public class Parser extends BaseParser {
                 params[3] = parseExpr();
                 params[4] = matchToken(')');
                 params[5] = parseStmt();
+                //# line 715
                 params[0].stmt = new Tree.WhileLoop(params[3].expr, params[5].stmt, params[1].loc);
                 return params[0];
             }
@@ -1777,7 +1916,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 369
     private SemValue parseExprT1() throws Exception {
         switch (lookahead) {
             case OR:
@@ -1787,6 +1927,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper1();
                 params[2] = parseExpr2();
                 params[3] = parseExprT1();
+                //# line 370
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -1808,7 +1949,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1818,7 +1959,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 444
     private SemValue parseExpr4() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1837,11 +1979,12 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseExpr5();
                 params[2] = parseExprT4();
+                //# line 445
                 params[0].expr = params[1].expr;
                 if (params[2].svec != null) {
                     for (int i = 0; i < params[2].svec.size(); ++i) {
                         params[0].expr = new Tree.Binary(params[2].svec.get(i), params[0].expr,
-                                params[2].evec.get(i), params[2].lvec.get(i));
+                            params[2].evec.get(i), params[2].lvec.get(i));
                     }
                 }
                 return params[0];
@@ -1853,24 +1996,10 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 456
     private SemValue parseExprT4() throws Exception {
         switch (lookahead) {
-            case ']':
-            case EQUAL:
-            case ')':
-            case NOT_EQUAL:
-            case ',':
-            case '=':
-            case OR:
-            case AND:
-            case ';':
-            {
-                SemValue[] params = new SemValue[1];
-                params[0] = new SemValue();
-
-                return params[0];
-            }
             case LESS_EQUAL:
             case GREATER_EQUAL:
             case '<':
@@ -1881,6 +2010,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper4();
                 params[2] = parseExpr5();
                 params[3] = parseExprT4();
+                //# line 457
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -1894,14 +2024,30 @@ public class Parser extends BaseParser {
                 }
                 return params[0];
             }
+            case ']':
+            case EQUAL:
+            case ')':
+            case NOT_EQUAL:
+            case ',':
+            case '=':
+            case OR:
+            case AND:
+            case ';':
+            {
+                SemValue[] params = new SemValue[1];
+                params[0] = new SemValue();
+                /* no action */
+                return params[0];
+            }
             default:
             {
-                String[] acc = {name(']'), name(EQUAL), name(')'), name(NOT_EQUAL), name(','), name('='), name(OR), name(AND), name(';'), name(LESS_EQUAL), name(GREATER_EQUAL), name('<'), name('>')};
+                String[] acc = {name(LESS_EQUAL), name(GREATER_EQUAL), name('<'), name('>'), name(']'), name(EQUAL), name(')'), name(NOT_EQUAL), name(','), name('='), name(OR), name(AND), name(';')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 751
     private SemValue parseReturnExpr() throws Exception {
         switch (lookahead) {
             case '!':
@@ -1919,6 +2065,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseExpr();
+                //# line 752
                 params[0].expr = params[1].expr;
                 return params[0];
             }
@@ -1926,7 +2073,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -1936,7 +2083,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 732
     private SemValue parseIfStmt() throws Exception {
         switch (lookahead) {
             case IF:
@@ -1949,6 +2097,7 @@ public class Parser extends BaseParser {
                 params[4] = matchToken(')');
                 params[5] = parseStmt();
                 params[6] = parseElseClause();
+                //# line 733
                 params[0].stmt = new Tree.If(params[3].expr, params[5].stmt, params[6].stmt, params[1].loc);
                 return params[0];
             }
@@ -1959,7 +2108,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 514
     private SemValue parseExprT6() throws Exception {
         switch (lookahead) {
             case '*':
@@ -1971,6 +2121,7 @@ public class Parser extends BaseParser {
                 params[1] = parseOper6();
                 params[2] = parseExpr7();
                 params[3] = parseExprT6();
+                //# line 515
                 params[0].svec = new Vector<Integer>();
                 params[0].lvec = new Vector<Location>();
                 params[0].evec = new Vector<Expr>();
@@ -2002,7 +2153,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -2012,28 +2163,10 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 561
     private SemValue parseExprT8() throws Exception {
         switch (lookahead) {
-            case '.':
-            {
-                SemValue[] params = new SemValue[5];
-                params[0] = new SemValue();
-                params[1] = matchToken('.');
-                params[2] = matchToken(IDENTIFIER);
-                params[3] = parseAfterIdentExpr();
-                params[4] = parseExprT8();
-                SemValue sem = new SemValue();
-                sem.ident = params[2].ident;
-                sem.loc = params[2].loc;
-                sem.elist = params[3].elist;
-                params[0].vec = new Vector<SemValue>();
-                params[0].vec.add(sem);
-                if (params[4].vec != null) {
-                    params[0].vec.addAll(params[4].vec);
-                }
-                return params[0];
-            }
             case '[':
             {
                 SemValue[] params = new SemValue[5];
@@ -2042,8 +2175,29 @@ public class Parser extends BaseParser {
                 params[2] = parseExpr();
                 params[3] = matchToken(']');
                 params[4] = parseExprT8();
+                //# line 562
                 SemValue sem = new SemValue();
                 sem.expr = params[2].expr;
+                params[0].vec = new Vector<SemValue>();
+                params[0].vec.add(sem);
+                if (params[4].vec != null) {
+                    params[0].vec.addAll(params[4].vec);
+                }
+                return params[0];
+            }
+            case '.':
+            {
+                SemValue[] params = new SemValue[5];
+                params[0] = new SemValue();
+                params[1] = matchToken('.');
+                params[2] = matchToken(IDENTIFIER);
+                params[3] = parseAfterIdentExpr();
+                params[4] = parseExprT8();
+                //# line 572
+                SemValue sem = new SemValue();
+                sem.ident = params[2].ident;
+                sem.loc = params[2].loc;
+                sem.elist = params[3].elist;
                 params[0].vec = new Vector<SemValue>();
                 params[0].vec.add(sem);
                 if (params[4].vec != null) {
@@ -2072,19 +2226,31 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
             {
-                String[] acc = {name('.'), name('['), name('/'), name(LESS_EQUAL), name(']'), name(GREATER_EQUAL), name('-'), name(EQUAL), name(')'), name(NOT_EQUAL), name(','), name('='), name(OR), name('+'), name(AND), name('*'), name(';'), name('<'), name('>'), name('%')};
+                String[] acc = {name('['), name('.'), name('/'), name(LESS_EQUAL), name(']'), name(GREATER_EQUAL), name('-'), name(EQUAL), name(')'), name(NOT_EQUAL), name(','), name('='), name(OR), name('+'), name(AND), name('*'), name(';'), name('<'), name('>'), name('%')};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 531
     private SemValue parseExpr7() throws Exception {
         switch (lookahead) {
+            case '-':
+            case '!':
+            {
+                SemValue[] params = new SemValue[3];
+                params[0] = new SemValue();
+                params[1] = parseOper7();
+                params[2] = parseExpr8();
+                //# line 532
+                params[0].expr = new Tree.Unary(params[1].counter, params[2].expr, params[1].loc);
+                return params[0];
+            }
             case READ_LINE:
             case NULL:
             case IDENTIFIER:
@@ -2098,27 +2264,19 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = parseExpr8();
+                //# line 536
                 params[0].expr = params[1].expr;
-                return params[0];
-            }
-            case '-':
-            case '!':
-            {
-                SemValue[] params = new SemValue[3];
-                params[0] = new SemValue();
-                params[1] = parseOper7();
-                params[2] = parseExpr8();
-                params[0].expr = new Tree.Unary(params[1].counter, params[2].expr, params[1].loc);
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER), name('-'), name('!')};
+                String[] acc = {name('-'), name('!'), name(READ_LINE), name(NULL), name(IDENTIFIER), name(NEW), name(THIS), name(INSTANCEOF), name(LITERAL), name('('), name(READ_INTEGER)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
+    //# line 37
     private SemValue parseClassList() throws Exception {
         switch (lookahead) {
             case CLASS:
@@ -2127,6 +2285,7 @@ public class Parser extends BaseParser {
                 params[0] = new SemValue();
                 params[1] = parseClassDef();
                 params[2] = parseClassList();
+                //# line 38
                 params[0].clist = new ArrayList<ClassDef>();
                 params[0].clist.add(params[1].cdef);
                 if (params[2].clist != null) {
@@ -2139,7 +2298,7 @@ public class Parser extends BaseParser {
             {
                 SemValue[] params = new SemValue[1];
                 params[0] = new SemValue();
-
+                /* no action */
                 return params[0];
             }
             default:
@@ -2149,7 +2308,8 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 287
     private SemValue parseOper4() throws Exception {
         switch (lookahead) {
             case LESS_EQUAL:
@@ -2157,6 +2317,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(LESS_EQUAL);
+                //# line 288
                 params[0].counter = Tree.LE;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -2166,6 +2327,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken(GREATER_EQUAL);
+                //# line 293
                 params[0].counter = Tree.GE;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -2175,6 +2337,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('<');
+                //# line 298
                 params[0].counter = Tree.LT;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -2184,6 +2347,7 @@ public class Parser extends BaseParser {
                 SemValue[] params = new SemValue[2];
                 params[0] = new SemValue();
                 params[1] = matchToken('>');
+                //# line 303
                 params[0].counter = Tree.GT;
                 params[0].loc = params[1].loc;
                 return params[0];
@@ -2195,28 +2359,10 @@ public class Parser extends BaseParser {
             }
         }
     }
-
+    
+    //# line 130
     private SemValue parseField() throws Exception {
         switch (lookahead) {
-            case VOID:
-            case CLASS:
-            case INT:
-            case STRING:
-            case BOOL:
-            {
-                SemValue[] params = new SemValue[4];
-                params[0] = new SemValue();
-                params[1] = parseType();
-                params[2] = matchToken(IDENTIFIER);
-                params[3] = parseFunctionField();
-                if (params[3].vlist != null) {
-                    params[0].fdef = new Tree.MethodDef(false, params[2].ident, params[1].type, params[3].vlist,
-                            (Tree.Block) params[3].stmt, params[2].loc);
-                } else {
-                    params[0].vdef = new Tree.VarDef(params[2].ident, params[1].type, params[2].loc);
-                }
-                return params[0];
-            }
             case STATIC:
             {
                 SemValue[] params = new SemValue[8];
@@ -2228,17 +2374,38 @@ public class Parser extends BaseParser {
                 params[5] = parseFormals();
                 params[6] = matchToken(')');
                 params[7] = parseStmtBlock();
+                //# line 131
                 params[0].fdef = new Tree.MethodDef(true, params[3].ident, params[2].type, params[5].vlist,
-                        (Tree.Block) params[7].stmt, params[3].loc);
+                    (Block) params[7].stmt, params[3].loc);
+                return params[0];
+            }
+            case VOID:
+            case CLASS:
+            case INT:
+            case STRING:
+            case BOOL:
+            {
+                SemValue[] params = new SemValue[4];
+                params[0] = new SemValue();
+                params[1] = parseType();
+                params[2] = matchToken(IDENTIFIER);
+                params[3] = parseFunctionField();
+                //# line 136
+                if (params[3].vlist != null) {
+                    params[0].fdef = new Tree.MethodDef(false, params[2].ident, params[1].type, params[3].vlist,
+                        (Block) params[3].stmt, params[2].loc);
+                } else {
+                    params[0].vdef = new Tree.VarDef(params[2].ident, params[1].type, params[2].loc);
+                }
                 return params[0];
             }
             default:
             {
-                String[] acc = {name(VOID), name(CLASS), name(INT), name(STRING), name(BOOL), name(STATIC)};
+                String[] acc = {name(STATIC), name(VOID), name(CLASS), name(INT), name(STRING), name(BOOL)};
                 throw error(name(lookahead), acc);
             }
         }
     }
-
+    
 }
 /* end of file */

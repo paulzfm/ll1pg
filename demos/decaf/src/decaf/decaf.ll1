@@ -541,10 +541,18 @@ Expr7           :   Oper7 Expr8
 Expr8           :   Expr9 ExprT8
                     {
                         $$.expr = $1.expr;
-                        if ($2.svec != null) {
-                            for (int i = 0; i < $2.svec.size(); ++i) {
-                                $$.expr = new Tree.Binary($2.svec.get(i), $$.expr,
-                                    $2.evec.get(i), $2.lvec.get(i));
+                        $$.loc = $1.loc;
+                        if ($2.vec != null) {
+                            for (SemValue v : $2.vec) {
+                                if (v.expr != null) {
+                                    $$.expr = new Tree.Indexed($$.expr, v.expr, $$.loc);
+                                } else if (v.elist != null) {
+                                    $$.expr = new Tree.CallExpr($$.expr, v.ident, v.elist, v.loc);
+                                    $$.loc = v.loc;
+                                } else {
+                                    $$.expr = new Tree.Ident($$.expr, v.ident, v.loc);
+                                    $$.loc = v.loc;
+                                }
                             }
                         }
                     }
