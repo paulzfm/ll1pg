@@ -1,6 +1,7 @@
 import SpecAST._
 
 import scala.collection.mutable
+import scala.util.parsing.input.NoPosition
 
 /**
   * Utilities.
@@ -63,6 +64,7 @@ object Utils {
   case class NonTerminalParser(semValue: SemValue, symbol: NonTerminal,
                                cases: List[(List[LASym], Sentence, JavaCode)]) extends Printable {
     override def printTo(writer: IndentWriter): Unit = {
+      writer.writeLn(s"//# line ${symbol.symbol.pos.line}")
       writer.writeLn(s"private $semValue parse$symbol() throws Exception {")
       writer.incIndent()
       writer.writeLn("switch (lookahead) {")
@@ -85,6 +87,7 @@ object Utils {
             case (NonTerminal(t), i) =>
               writer.writeLn(s"params[${i + 1}] = parse$t();")
           }
+          if (c.pos != NoPosition) writer.writeLn(s"//# line ${c.pos.line}")
           c.printTo(writer)
           writer.writeLn("return params[0];")
           writer.decIndent()

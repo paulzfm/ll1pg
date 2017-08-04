@@ -62,7 +62,8 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.writeLn("/* tokens */")
     val identTokens = tokens.filter(_.isIdent)
     identTokens.zipWithIndex.foreach {
-      case (t, i) => writer.writeLn(s"public static final int $t = ${257 + i};")
+      case (t, i) =>
+        writer.writeLn(s"public static final int $t = ${257 + i}; //# line ${t.pos.line}")
     }
     writer.writeLn()
     writer.writeLn("/* search token name */")
@@ -103,7 +104,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
   private def printInfoTo(writer: IndentWriter): Unit = {
     writer.writeLn("/* This is auto-generated Parser source by LL1-Parser-Gen.")
     writer.writeLn(s" * Generated at: ${Calendar.getInstance.getTime}")
-    writer.writeLn(" * Please do NOT modify it unless you know what you are doing!")
+    writer.writeLn(" * Please do NOT modify it!")
     writer.writeLn(" *")
     writer.writeLn(" * Project repository: https://github.com/paulzfm/LL1-Parser-Gen")
     writer.writeLn(" * Author: Zhu Fengmin (Paul)")

@@ -1,3 +1,4 @@
+import Parsers.ParsingError
 import SpecAST._
 import Utils._
 
@@ -175,6 +176,13 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
         (l, ps)
     }.toList
 
+  // Helper functions to pretty print collections.
+  def listToString[T](l: List[T]): String =
+    if (l.isEmpty) "<empty>"
+  else l.mkString(" ")
+
+  def setToString[T](l: Set[T]): String = s"{${l.mkString(", ")}}"
+
   /**
     * Check whether the grammar is a LL(1) grammar.
     *
@@ -208,8 +216,10 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
   def assertLL1(ps: PS): Unit = checkLL1(ps) match {
     case None => // success
     case Some((l, x, sx, y, sy)) => // failure
-      throw new Exception(s"Not LL(1) grammar: PS($l -> $x) = $sx, PS($l -> $y) = $sy, " +
-        "but their intersection is non empty")
+      throw ParsingError(s"not LL(1) grammar:\n" +
+        s"PS($l -> ${listToString(x)}) = ${setToString(sx)},\n" +
+        s"PS($l -> ${listToString(y)}) = ${setToString(sy)},\n" +
+        s"but their intersection is non empty", l.symbol.pos)
   }
 
   /**
@@ -241,7 +251,10 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
       case (l, t) =>
         val t1 = deconflict(t)
         if (t1 != t) {
-          Console.err.println(s"Warning: conflict sentences for productions $l -> ...")
+          Console.err.println(s"Warning: conflict productions at line ${l.symbol.pos.line}:")
+          for {
+            (s, _) <- t
+          } yield Console.err.println(s"$l -> ${listToString(s)}")
         }
         (l, t1)
     }

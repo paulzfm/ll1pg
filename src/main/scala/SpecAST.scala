@@ -25,10 +25,30 @@ object SpecAST {
     override def toString: String = s"'${symbol.toString}'"
   }
 
+  /**
+    * User-defined action code.
+    *
+    * @param source Java source code.
+    */
   case class JavaCode(source: String) extends Node {
-    override def printTo(writer: IndentWriter): Unit = writer.writeLn(
-      source.trim.replaceAll("[$]([1-9][0-9]*)", "params[$1]")
-        .replaceAll("[$]{2}", "params[0]"))
+    // Split source code to non-empty lines.
+    val rawLines: List[String] = source
+      .replaceAll("[$]([1-9][0-9]*)", "params[$1]")
+      .replaceAll("[$]{2}", "params[0]")
+      .split("\n")
+      .toList
+      .filterNot(_.matches("^\\s*$"))
+
+    // Trim extra spaces for each line.
+    val lines: List[String] = if (rawLines.isEmpty) Nil
+    else {
+      val spaces = rawLines.map(
+        _.takeWhile(List(' ', '\f', '\r', '\t').contains).length
+      ).min // number of spaces to be trimmed
+      rawLines.map(_.substring(spaces))
+    }
+
+    override def printTo(writer: IndentWriter): Unit = lines.foreach(writer.writeLn)
   }
 
   case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start),

@@ -1,3 +1,5 @@
+import Parsers.ParsingError
+
 import scala.util.{Failure, Success}
 
 /**
@@ -35,11 +37,16 @@ object Main {
     Parsers.parse(lines) match {
       case Success(spec) =>
         val gen = new Generator(spec, strict)
-        val code = gen.generate
-        val writer = new IndentWriter
-        code.printTo(writer)
-        writer.outputToFile(outputFile)
-      case Failure(ex) => ex.printStackTrace()
+        try {
+          val code = gen.generate
+          val writer = new IndentWriter
+          code.printTo(writer)
+          writer.outputToFile(outputFile)
+        } catch {
+          case ex: ParsingError => Console.err.println(ex.getMessage)
+          case ex => ex.printStackTrace()
+        }
+      case Failure(ex) => Console.err.println(ex.getMessage)
     }
 
   }
