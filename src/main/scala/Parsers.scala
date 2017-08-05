@@ -10,6 +10,9 @@ import scala.util.{Failure, Success, Try}
   */
 object Parsers {
 
+  /**
+    * Java source code parser.
+    */
   class CodeLineParser extends RegexParsers {
     def code: Parser[JavaCode] = in => {
       val source = in.source
@@ -36,6 +39,9 @@ object Parsers {
     }
   }
 
+  /**
+    * Token and literal parsers.
+    */
   class TokenParser extends CodeLineParser {
     def ident: Parser[Ident] =
       positioned("""[_A-Za-z][_A-Za-z0-9]*""".r ^^ Ident)
@@ -53,6 +59,9 @@ object Parsers {
       """(\s|//.*|(?m)/\*(\*(?!/)|[^*])*\*/)+""".r
   }
 
+  /**
+    * Header parsers.
+    */
   class HeaderParsers extends TokenParser {
     def pkg: Parser[Package] = positioned("%package" ~> pkgName ^^ Package)
 
@@ -61,7 +70,7 @@ object Parsers {
     def semValue: Parser[SemValue] = positioned("%sem" ~> ident ^^ SemValue)
 
     def cls: Parser[Class] = positioned(
-      "%class" ~> ident ~ ("extends" ~> ident).? ~ ("implements" ~> ident.+).? ^^ {
+      "%class" ~> ident ~ ("extends" ~> ident) ~ ("implements" ~> ident.+).? ^^ {
         case c ~ e ~ is => Class(c, e, is)
       })
 
@@ -74,6 +83,11 @@ object Parsers {
     def headers: Parser[List[Header]] = header.* <~ "%%"
   }
 
+  /**
+    * Rule parsers.
+    *
+    * @param tokens declared terminals.
+    */
   class RuleParser(tokens: List[Token]) extends HeaderParsers {
     def action: Parser[JavaCode] = positioned("{" ~> code <~ "}")
 
@@ -110,60 +124,101 @@ object Parsers {
     def rules: Parser[List[Rule]] = rule.*
   }
 
-  case class ParsingError(msg: String, pos: Position = NoPosition) extends Exception {
+  /**
+    * Error type.
+    *
+    * @param msg error message.
+    * @param pos error location.
+    */
+  case class Error(msg: String, pos: Position = NoPosition) extends Exception {
     override def getMessage: String = pos match {
       case NoPosition => s"Error: $msg"
       case _ => s"Error: at (${pos.line}, ${pos.column}): $msg:\n${pos.longString}"
     }
   }
 
+  /**
+    * Check if some undefined non-terminal, i.e., which has no right-hand side, are used by some
+    * rule.
+    *
+    * @param rules all rules parsed.
+    */
   def checkNonTerminals(rules: List[Rule]): Unit = {
     val defined = rules.map(_.left.symbol)
     for {
       Rule(_, rs) <- rules
       (ts, _) <- rs
       NonTerminal(t) <- ts
-    } yield if (!defined.contains(t)) throw ParsingError(s"undefined non-terminal: $t", t.pos)
+    } yield if (!defined.contains(t)) throw Error(s"undefined non-terminal: $t", t.pos)
   }
 
-  def parse(source: String): Try[Spec] = {
-    val p1 = new HeaderParsers
-    p1.parse(p1.headers, source) match {
-      case p1.Success(hds: List[Header], in) =>
-        val tokens = hds.flatMap {
-          case Tokens(ts) => ts
-          case _ => Nil
-        }
-
-        def find[T <: Header](tester: Header => Boolean, header: String, definition: String): T = {
-          hds.find(tester) match {
-            case Some(h) => h.asInstanceOf[T]
-            case None => throw ParsingError(s"$header undefined, define it by `$definition'")
-          }
-        }
-
-        //Package, Imports, SemValue, Class, Tokens, Start
-        val headers = (
-          find[Package](x => x.isInstanceOf[Package], "package", "%package"),
-          find[Imports](x => x.isInstanceOf[Imports], "imports", "%import"),
-          find[SemValue](x => x.isInstanceOf[SemValue], "semantic value", "%sem"),
-          find[Class](x => x.isInstanceOf[Class], "class", "%class"),
-          find[Tokens](x => x.isInstanceOf[Tokens], "tokens", "%tokens"),
-          find[Start](x => x.isInstanceOf[Start], "start symbol", "%start")
-        )
-
-        val p2 = new RuleParser(tokens)
-        p2.parseAll(p2.rules, in) match {
-          case p2.Success(rules: List[Rule], _) =>
-            Try(checkNonTerminals(rules)) match {
-              case Success(_) => Success(Spec(headers, rules))
-              case Failure(ex) => Failure(ex)
-            }
-          case p2.Failure(msg, next) => Failure(ParsingError(msg, next.pos))
-          case p2.Error(msg, next) => Failure(ParsingError(msg, next.pos))
-        }
-      case p1.Failure(msg, next) => Failure(ParsingError(msg, next.pos))
-      case p1.Error(msg, next) => Failure(ParsingError(msg, next.pos))
+  /**
+    * First step of parsing: parse headers.
+    *
+    * We create `parseHeaders` and `parseRules` to transform `ParseResult[T]` to `Try[T]`,
+    * so that we can simply use `for ... yield ...` in `parse` function to combine the execution
+    * steps that potentially throw exceptions.
+    *
+    * @param source specification file as text.
+    * @return - `Success(hds, next)` if succeeds, and `hds` are the parsed `Header`s, and `next`
+    *         is the remain text.
+    *         - `Failure(ex)` if fails, and `ex` shows the error.
+    */
+  def parseHeaders(source: String): Try[(List[Header], CharSequence)] = {
+    val p = new HeaderParsers
+    p.parse(p.headers, source) match {
+      case p.Success(hds: List[Header], in) =>
+        val src = in.source
+        Success(hds, src.subSequence(in.offset, src.length))
+      case p.Failure(msg, next) => Failure(Error(msg, next.pos))
+      case p.Error(msg, next) => Failure(Error(msg, next.pos))
     }
+  }
+
+  /**
+    * Second step of parsing: parse rules.
+    *
+    * @param source remain specification file (without headers).
+    * @return - `Success(rules)` if succeeds, and `rules` are the parsed `Rule`s.
+    *         - `Failure(ex)` if fails, and `ex` shows the error.
+    */
+  def parseRules(source: CharSequence, headers: Headers): Try[List[Rule]] = {
+    val tokens = headers._5.tokens
+    val p = new RuleParser(tokens)
+    p.parseAll(p.rules, source) match {
+      case p.Success(rules: List[Rule], _) => Success(rules)
+      case p.Failure(msg, next) => Failure(Error(msg, next.pos))
+      case p.Error(msg, next) => Failure(Error(msg, next.pos))
+    }
+  }
+
+  /**
+    * Entry parser. Call this to parse a specification file.
+    *
+    * @param source specification file as text.
+    * @return - `Success(spec)` if succeeds, and `spec` is the parsed `Spec`.
+    *         - `Failure(ex)` if fails, and `ex` shows the error.
+    */
+  def parse(source: String): Try[Spec] = {
+    def find[T <: Header](hds: List[Header], tester: Header => Boolean,
+                          header: String, definition: String): Try[T] = {
+      hds.find(tester) match {
+        case Some(h) => Success(h.asInstanceOf[T])
+        case None => Failure(Error(s"$header undefined, define it by `$definition'"))
+      }
+    }
+
+    for {
+      (hds, next) <- parseHeaders(source)
+      h1 <- find[Package](hds, x => x.isInstanceOf[Package], "package", "%package")
+      h2 <- find[Imports](hds, x => x.isInstanceOf[Imports], "imports", "%import")
+      h3 <- find[SemValue](hds, x => x.isInstanceOf[SemValue], "semantic value", "%sem")
+      h4 <- find[Class](hds, x => x.isInstanceOf[Class], "class", "%class")
+      h5 <- find[Tokens](hds, x => x.isInstanceOf[Tokens], "tokens", "%tokens")
+      h6 <- find[Start](hds, x => x.isInstanceOf[Start], "start symbol", "%start")
+      headers = (h1, h2, h3, h4, h5, h6)
+      rules <- parseRules(next, headers)
+      _ <- Try(checkNonTerminals(rules))
+    } yield Spec(headers, rules)
   }
 }

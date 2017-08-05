@@ -1,8 +1,9 @@
-import Parsers.ParsingError
+import Parsers.Error
 import SpecAST._
 import Utils._
 
 import scala.collection.mutable
+import scala.util.{Failure, Success, Try}
 
 /**
   * Parser generator from the specification defined with `AST`.
@@ -179,7 +180,7 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
   // Helper functions to pretty print collections.
   def listToString[T](l: List[T]): String =
     if (l.isEmpty) "<empty>"
-  else l.mkString(" ")
+    else l.mkString(" ")
 
   def setToString[T](l: Set[T]): String = s"{${l.mkString(", ")}}"
 
@@ -206,21 +207,6 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
         case Some((x, y, _, tx, ty)) => Some((l, x, tx, y, ty))
       }
     }
-
-  /**
-    * Assert the given grammar is a LL(1) grammar.
-    * Will throw exception if the assertion is violated.
-    *
-    * @param ps a list presenting predictive sets.
-    */
-  def assertLL1(ps: PS): Unit = checkLL1(ps) match {
-    case None => // success
-    case Some((l, x, sx, y, sy)) => // failure
-      throw ParsingError(s"not LL(1) grammar:\n" +
-        s"PS($l -> ${listToString(x)}) = ${setToString(sx)},\n" +
-        s"PS($l -> ${listToString(y)}) = ${setToString(sy)},\n" +
-        s"but their intersection is non empty", l.symbol.pos)
-  }
 
   /**
     * In unstrict mode, if the given grammar is not LL(1), we reduce conflicts by specifying the
@@ -272,7 +258,7 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
         val codeMap = rulesMap(nt).flatMap(_.rights).toMap
         val cases = tb.map {
           case (s, terms) => (terms.toList, s, codeMap(s))
-        }.toList
+        }
         NonTerminalParser(spec.sem, nt, cases)
     }
     new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers)
@@ -284,13 +270,19 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
     *
     * @return the target parser.
     */
-  def generate: JavaCodeFile = {
+  def generate: Try[JavaCodeFile] = {
     val first = computeFirstSet
     val follow = computeFollowSet(first)
     val ps = computePredictiveSet(first, follow)
     if (strictMode) {
-      assertLL1(ps)
-      generateCode(ps)
-    } else generateCode(transformLL1(ps))
+      checkLL1(ps) match {
+        case None => Success(generateCode(ps))
+        case Some((l, x, sx, y, sy)) =>
+          Failure(Error(s"not LL(1) grammar:\n" +
+            s"PS($l -> ${listToString(x)}) = ${setToString(sx)},\n" +
+            s"PS($l -> ${listToString(y)}) = ${setToString(sy)},\n" +
+            s"but their intersection is non empty", l.symbol.pos))
+      }
+    } else Success(generateCode(transformLL1(ps)))
   }
 }

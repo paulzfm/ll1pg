@@ -41,13 +41,13 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.writeLn()
 
     // Print headers.
-    pkg.printTo(writer)
+    writer.writeLn(s"package $pkg;")
     writer.writeLn()
-    imports.printTo(writer)
+    imports.classes.foreach(x => writer.writeLn(s"import $x;"))
     writer.writeLn()
 
     // Begin class.
-    cls.printTo(writer)
+    writer.writeLn(cls.toString)
     writer.writeLn(" {")
     writer.incIndent()
 

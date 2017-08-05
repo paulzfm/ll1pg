@@ -1,27 +1,32 @@
 import scala.util.parsing.input.Positional
 
 /**
-  * Specification which illustrating how the syntax of the target language is like.
+  * Specification that illustrates how the syntax of the target language is like.
   * The language syntax is described with a LL1 parser and LL1-parser-gen will automatically
   * generate the corresponding parser implementation in Java.
   */
 object SpecAST {
 
-  abstract class Node extends Positional with Printable
+  /**
+    * AST node with position information.
+    */
+  abstract class Node extends Positional
 
+  /**
+    * Identifier.
+    *
+    * @param symbol the name of the identifier.
+    */
   case class Ident(symbol: String) extends Node {
-    override def printTo(writer: IndentWriter): Unit = writer.write(symbol)
-
     override def toString: String = symbol
   }
 
+  /**
+    * Constant character.
+    *
+    * @param symbol the character.
+    */
   case class Const(symbol: Char) extends Node {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.write("'")
-      writer.write(symbol.toString)
-      writer.write("'")
-    }
-
     override def toString: String = s"'${symbol.toString}'"
   }
 
@@ -48,16 +53,21 @@ object SpecAST {
       rawLines.map(_.substring(spaces))
     }
 
-    override def printTo(writer: IndentWriter): Unit = lines.foreach(writer.writeLn)
+    override def toString: String = lines.mkString("\n")
   }
 
-  case class Spec(headers: (Package, Imports, SemValue, Class, Tokens, Start),
-                  rules: List[Rule]) extends Node {
-    override def printTo(writer: IndentWriter): Unit = {
-      //      headers.foreach(_.printTo(writer))
-      rules.foreach(_.printTo(writer))
-    }
+  /**
+    * Complete headers.
+    */
+  type Headers = (Package, Imports, SemValue, Class, Tokens, Start)
 
+  /**
+    * Top level node presenting the whole specification.
+    *
+    * @param headers headers.
+    * @param rules   rules.
+    */
+  case class Spec(headers: Headers, rules: List[Rule]) extends Node {
     def pkg: Package = headers._1
 
     def imports: Imports = headers._2
@@ -71,89 +81,76 @@ object SpecAST {
     def start: NonTerminal = headers._6.symbol
   }
 
+  /**
+    * Constructor with minimal headers.
+    *
+    * @param headers minimal headers.
+    * @param rules   rules.
+    * @return a specification.
+    */
   def Spec(headers: (Tokens, Start), rules: List[Rule]): Spec = {
     val (tokens, start) = headers
     Spec(
-      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident("")),
+      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident(""), Ident("")),
         tokens, start),
       rules
     )
   }
 
+  /**
+    * Header.
+    */
   abstract class Header extends Node
 
+  /**
+    * Package where the parser situates in.
+    *
+    * @param name identifier presenting the package name.
+    */
   case class Package(name: Ident) extends Header {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.write("package ")
-      name.printTo(writer)
-      writer.writeLn(";")
-    }
+    override def toString: String = name.toString
   }
 
-  case class Imports(classes: List[Ident]) extends Header {
-    override def printTo(writer: IndentWriter): Unit = classes.foreach {
-      cls =>
-        writer.write("import ")
-        cls.printTo(writer)
-        writer.writeLn(";")
-    }
-  }
+  /**
+    * Packages where the parser dependes on.
+    *
+    * @param classes packages shall be imported.
+    */
+  case class Imports(classes: List[Ident]) extends Header
 
+  /**
+    * Semantic value for the parser.
+    *
+    * @param name identifier presenting the name of the semantic value type (class).
+    */
   case class SemValue(name: Ident) extends Header {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.write("sem ")
-      name.printTo(writer)
-      writer.writeLn(";")
-    }
-
     override def toString: String = name.toString
   }
 
-  case class ParseError(name: Ident) extends Header {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.write("err ")
-      name.printTo(writer)
-      writer.writeLn(";")
-    }
-
-    override def toString: String = name.toString
-  }
-
-  case class Class(name: Ident, superClass: Option[Ident] = None,
+  /**
+    * Class for the parser.
+    *
+    * @param name       identifier presenting the name of the class.
+    * @param superClass identifier presenting the name of the super class.
+    * @param implements identifiers presenting the name of inherited interfaces, optional.
+    */
+  case class Class(name: Ident, superClass: Ident,
                    implements: Option[List[Ident]] = None) extends Header {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.write("public class ")
-      name.printTo(writer)
-      superClass match {
-        case Some(cls) =>
-          writer.write(" extends ")
-          cls.printTo(writer)
-        case None =>
-      }
+    override def toString: String = s"public class $name extends $superClass${
       implements match {
-        case Some(is) =>
-          writer.write(" implements ")
-          printSep(writer, "", "")(is)
-        case None =>
+        case Some(is) => "implements " + is.mkString(", ")
+        case None => ""
       }
-    }
+    }"
   }
 
+  /**
+    * Tokens declared as terminals.
+    *
+    * @param tokens token list.
+    */
   case class Tokens(tokens: List[Token]) extends Header {
-    override def printTo(writer: IndentWriter): Unit = {
-      writer.writeLn("tokens = [")
-      writer.incIndent()
-      val front :+ end = tokens
-      front.foreach {
-        t =>
-          t.printTo(writer)
-          writer.writeLn(",")
-      }
-      end.printTo(writer)
-      writer.writeLn()
-      writer.decIndent()
-      writer.writeLn("];")
-    }
+    override def toString: String = tokens.mkString(", ")
   }
 
   /**
@@ -171,10 +168,6 @@ object SpecAST {
   case class IdentToken(ident: Ident) extends Token {
     override def isIdent: Boolean = true
 
-    def printTo(writer: IndentWriter): Unit = {
-      ident.printTo(writer)
-    }
-
     override def toString: String = ident.toString
   }
 
@@ -188,21 +181,23 @@ object SpecAST {
   case class ConstToken(const: Const) extends Token {
     override def isIdent: Boolean = false
 
-    def printTo(writer: IndentWriter): Unit = const.printTo(writer)
-
     override def toString: String = const.toString
   }
 
   def ConstToken(const: Char): Token = ConstToken(Const(const))
 
+  /**
+    * Start symbol of the CFG.
+    *
+    * @param symbol an non-terminal presenting the start symbol.
+    */
   case class Start(symbol: NonTerminal) extends Header {
-    def printTo(writer: IndentWriter): Unit = {
-      writer.write("start = ")
-      symbol.printTo(writer)
-      writer.writeLn(";")
-    }
+    override def toString: String = symbol.toString
   }
 
+  /**
+    * A sentence is a sequence of terms.
+    */
   type Sentence = List[Term]
 
   /**
@@ -211,24 +206,7 @@ object SpecAST {
     * @param left   left non-terminal.
     * @param rights right terms with action (in format of Java code).
     */
-  case class Rule(left: NonTerminal, rights: List[(Sentence, JavaCode)]) extends Node {
-    def printTo(writer: IndentWriter): Unit = {
-      left.printTo(writer)
-      writer.writeLn(":")
-      writer.incIndent()
-      rights.foreach {
-        case (ts, code) =>
-          if (ts.isEmpty) writer.write("/* empty */")
-          else printSep(writer, "", "", " ")(ts)
-          writer.writeLn(" {")
-          writer.incIndent()
-          code.printTo(writer)
-          writer.decIndent()
-          writer.writeLn("}")
-      }
-      writer.decIndent()
-    }
-  }
+  case class Rule(left: NonTerminal, rights: List[(Sentence, JavaCode)]) extends Node
 
   /**
     * Term of CFG rule.
@@ -245,8 +223,6 @@ object SpecAST {
   case class Terminal(token: Token) extends Term {
     override def nonTerminal: Boolean = false
 
-    override def printTo(writer: IndentWriter): Unit = token.printTo(writer)
-
     override def toString: String = token.toString
   }
 
@@ -257,8 +233,6 @@ object SpecAST {
     */
   case class NonTerminal(symbol: Ident) extends Term {
     override def nonTerminal: Boolean = true
-
-    override def printTo(writer: IndentWriter): Unit = symbol.printTo(writer)
 
     override def toString: String = symbol.toString
   }

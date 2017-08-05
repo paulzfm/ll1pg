@@ -88,7 +88,7 @@ object Utils {
               writer.writeLn(s"params[${i + 1}] = parse$t();")
           }
           if (c.pos != NoPosition) writer.writeLn(s"//# line ${c.pos.line}")
-          c.printTo(writer)
+          c.lines.foreach(writer.writeLn)
           writer.writeLn("return params[0];")
           writer.decIndent()
           writer.writeLn("}")

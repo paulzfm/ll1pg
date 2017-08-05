@@ -4,6 +4,8 @@ import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner
 
+import scala.util.Failure
+
 
 @RunWith(classOf[JUnitRunner])
 class TestParsers extends FunSuite {
@@ -44,15 +46,10 @@ class TestParsers extends FunSuite {
     assert(p.parseAll(p.semValue, "%sem SemValue").get == SemValue(Ident("SemValue")))
   }
 
-  test("parse class: %class Parser") {
-    val p = new Parsers.HeaderParsers
-    assert(p.parseAll(p.cls, "%class Parser").get == Class(Ident("Parser")))
-  }
-
   test("parse class: %class Parser extends BaseParser") {
     val p = new Parsers.HeaderParsers
     assert(p.parseAll(p.cls, "%class Parser extends BaseParser").get ==
-      Class(Ident("Parser"), Some(Ident("BaseParser"))))
+      Class(Ident("Parser"), Ident("BaseParser")))
   }
 
   test("parse start: %start TopLevel") {
@@ -162,5 +159,4 @@ class TestParsers extends FunSuite {
       case p.Failure(msg, _) => System.err.println(msg)
     }
   }
-
 }
