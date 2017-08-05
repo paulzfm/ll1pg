@@ -164,12 +164,10 @@ object Parsers {
     *         is the remain text.
     *         - `Failure(ex)` if fails, and `ex` shows the error.
     */
-  def parseHeaders(source: String): Try[(List[Header], CharSequence)] = {
+  def parseHeaders(source: String): Try[(List[Header], HeaderParsers#Input)] = {
     val p = new HeaderParsers
     p.parse(p.headers, source) match {
-      case p.Success(hds: List[Header], in) =>
-        val src = in.source
-        Success(hds, src.subSequence(in.offset, src.length))
+      case p.Success(hds: List[Header], in) => Success(hds, in)
       case p.Failure(msg, next) => Failure(Error(msg, next.pos))
       case p.Error(msg, next) => Failure(Error(msg, next.pos))
     }
@@ -182,7 +180,7 @@ object Parsers {
     * @return - `Success(rules)` if succeeds, and `rules` are the parsed `Rule`s.
     *         - `Failure(ex)` if fails, and `ex` shows the error.
     */
-  def parseRules(source: CharSequence, headers: Headers): Try[List[Rule]] = {
+  def parseRules(source: HeaderParsers#Input, headers: Headers): Try[List[Rule]] = {
     val tokens = headers._5.tokens
     val p = new RuleParser(tokens)
     p.parseAll(p.rules, source) match {
