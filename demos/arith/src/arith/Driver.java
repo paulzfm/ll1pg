@@ -30,7 +30,7 @@ public final class Driver {
 		throw error;
 	}
 
-	private void compile(InputStream in) throws CompileError {
+	private void compile(InputStream in) throws Exception {
 		lexer = new Lexer(in);
 		parser = new Parser();
 		lexer.setParser(parser);
@@ -54,8 +54,8 @@ public final class Driver {
 			InputStream in = new ByteArrayInputStream(expr.getBytes());
 			try {
 				driver.compile(in);
-			} catch (CompileError err) {
-				System.err.println(err);
+			} catch (Exception ex) {
+				System.err.println(ex);
 			}
 		}
 	}
