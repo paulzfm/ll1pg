@@ -1,5 +1,5 @@
 /* This is auto-generated Parser source by LL1-Parser-Gen.
- * Generated at: Fri Aug 04 22:11:16 CST 2017
+ * Generated at: Sat Aug 05 22:31:08 CST 2017
  * Please do NOT modify it!
  *
  * Project repository: https://github.com/paulzfm/LL1-Parser-Gen
@@ -13,7 +13,8 @@ import decaf.Tree;
 import decaf.Tree.*;
 import java.util.*;
 
-public class Parser extends BaseParser {
+public class Parser extends BaseParser
+ {
     public static final int eof = -1;
     public static final int eos = 0;
     public int lookahead = -1;

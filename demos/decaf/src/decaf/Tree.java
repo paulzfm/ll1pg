@@ -82,14 +82,9 @@ public abstract class Tree {
 	public static final int WHILELOOP = DOLOOP + 1;
 
 	/**
-	 * Repeat-loops, of type RepeatLoop.
-	 */
-	public static final int REPEATLOOP = WHILELOOP + 1;
-
-	/**
 	 * For-loops, of type ForLoop.
 	 */
-	public static final int FORLOOP = REPEATLOOP + 1;
+	public static final int FORLOOP = WHILELOOP + 1;
 
 	/**
 	 * Labelled statements, of type Labelled.
@@ -97,29 +92,9 @@ public abstract class Tree {
 	public static final int LABELLED = FORLOOP + 1;
 
 	/**
-	 * Switch statements, of type Switch.
-	 */
-	public static final int SWITCH = LABELLED + 1;
-
-	/**
-	 * Case parts in switch statements, of type Case.
-	 */
-	public static final int CASE = SWITCH + 1;
-
-	/**
-	 * Caseblock in case statements, of type Caseblock.
-	 */
-	public static final int CASEBLOCK = CASE + 1;
-
-	/**
-	 * Default part in switch statements, of type Default.
-	 */
-	public static final int DEFAULT = CASEBLOCK + 1;
-
-	/**
 	 * Synchronized statements, of type Synchonized.
 	 */
-	public static final int SYNCHRONIZED = DEFAULT + 1;
+	public static final int SYNCHRONIZED = LABELLED + 1;
 
 	/**
 	 * Try statements, of type Try.
@@ -631,178 +606,6 @@ public abstract class Tree {
 	}
 
 	/**
-	 * A "switch () { }" block
-	 * 
-	 * @author Paul
-	 */
-	public static class Switch extends Tree {
-
-		public Expr key;
-		public List<Tree> caseBranches;
-		public Tree defaultBranch;
-
-		public Switch(Expr key, List<Tree> caseBranches, Tree defaultBranch,
-				Location loc) {
-			super(SWITCH, loc);
-			this.key = key;
-			this.caseBranches = caseBranches;
-			this.defaultBranch = defaultBranch;
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("switch");
-			pw.incIndent();
-			key.printTo(pw);
-			pw.println("switchblock");
-			pw.incIndent();
-			for (Tree c : caseBranches) {
-				c.printTo(pw);
-			}
-			pw.decIndent();
-			if (defaultBranch != null) {
-				pw.incIndent();
-				defaultBranch.printTo(pw);
-				pw.decIndent();
-			}
-			pw.decIndent();
-		}
-
-	}
-
-	/**
-	 * A case statement of switch.
-	 * 
-	 * @author Paul
-	 */
-	public static class Case extends Tree {
-
-		public Expr option;
-		public CaseBlock body;
-
-		public Case(Expr option, CaseBlock body, Location loc) {
-			super(CASE, loc);
-			this.option = option;
-			this.body = body;
-			this.loc = loc;
-		}
-
-		@Override
-		public void accept(Visitor v) {
-			v.visitCase(this);
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("case");
-			pw.incIndent();
-			option.printTo(pw);
-			if (body != null) {
-				body.printTo(pw);
-			}
-			pw.decIndent();
-		}
-	}
-
-	/**
-	 * A caseblock for case.
-	 * 
-	 * @author Paul
-	 */
-	public static class CaseBlock extends Tree {
-
-		public List<Tree> block;
-
-		public CaseBlock(List<Tree> block, Location loc) {
-			super(CASEBLOCK, loc);
-			this.block = block;
-		}
-
-		@Override
-		public void accept(Visitor v) {
-			v.visitCaseBlock(this);
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("caseblock");
-			pw.incIndent();
-			if (block.size() == 0) {
-				pw.println("<empty>");
-			} else {
-				for (Tree s : block) {
-					if (s == null) {
-						pw.println("NULL!");
-					} else {
-						s.printTo(pw);
-					}
-				}
-			}
-			pw.decIndent();
-		}
-	}
-
-	/**
-	 * A default statement of switch.
-	 * 
-	 * @author Paul
-	 */
-	public static class Default extends Tree {
-
-		public CaseBlock body;
-
-		public Default(CaseBlock block, Location loc) {
-			super(DEFAULT, loc);
-			this.body = block;
-		}
-
-		@Override
-		public void accept(Visitor v) {
-			v.visitDefault(this);
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("default");
-			pw.incIndent();
-			body.printTo(pw);
-			pw.decIndent();
-		}
-	}
-
-	/**
-	 * A "repeat {} until ()" block.
-	 * 
-	 * @author Paul
-	 */
-	public static class RepeatLoop extends Tree {
-
-		public Expr condition;
-		public Tree loopBody;
-
-		public RepeatLoop(Tree loopBody, Expr condition, Location loc) {
-			super(REPEATLOOP, loc);
-			this.condition = condition;
-			this.loopBody = loopBody;
-		}
-
-		@Override
-		public void accept(Visitor v) {
-			v.visitRepeatLoop(this);
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("repeat");
-			pw.incIndent();
-			loopBody.printTo(pw);
-			condition.printTo(pw);
-			pw.decIndent();
-		}
-
-	}
-
-	/**
 	 * an expression statement
 	 * 
 	 * @param expr
@@ -1190,41 +993,6 @@ public abstract class Tree {
 				binaryOperatorPrintTo(pw, "geq");
 				break;
 			}
-		}
-	}
-
-	/**
-	 * Tertiary operator.
-	 * 
-	 * @author paul
-	 */
-	public static class Tertiary extends Expr {
-
-		public Expr condition;
-		public Expr trueBranch;
-		public Expr falseBranch;
-
-		public Tertiary(Expr condition, Expr trueBranch, Expr falseBranch,
-				Location loc) {
-			super(TERTIARY, loc);
-			this.condition = condition;
-			this.trueBranch = trueBranch;
-			this.falseBranch = falseBranch;
-		}
-
-		@Override
-		public void accept(Visitor v) {
-			v.visitTertiary(this);
-		}
-
-		@Override
-		public void printTo(IndentPrintWriter pw) {
-			pw.println("cond");
-			pw.incIndent();
-			condition.printTo(pw);
-			trueBranch.printTo(pw);
-			falseBranch.printTo(pw);
-			pw.decIndent();
 		}
 	}
 
@@ -1722,30 +1490,6 @@ public abstract class Tree {
 			visitTree(that);
 		}
 
-		public void visitRepeatLoop(RepeatLoop that) {
-			visitTree(that);
-		}
-
-		public void visitSwitch(Switch that) {
-			visitTree(that);
-		}
-
-		public void visitCase(Case that) {
-			visitTree(that);
-		}
-
-		public void visitCaseBlock(CaseBlock that) {
-			visitTree(that);
-		}
-
-		public void visitDefault(Default that) {
-			visitTree(that);
-		}
-
-		public void visitTertiary(Tertiary that) {
-			visitTree(that);
-		}
-		
 		public void visitCalculate(Calculate that) {
 			visitTree(that);
 		}

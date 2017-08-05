@@ -34,16 +34,16 @@ SIMPLE_OPERATOR		= ("+"|"-"|"*"|"/"|"%"|"="|"<"|">"|"."|","|";"|"!"|"("|")"|"["|
 S_COMMENT			= ("//"[^\r\n]*{NEWLINE})
 WHITESPACE			= ([ \t]+)
 
-	// 开始条件S表示字符串
+	// Start from string
 %x S
 
 %%
-	// 识别注释和空白字符的规则
+	// Comments and whitespaces
 {WHITESPACE}		{ /* Just ignore */    }
 {NEWLINE}			{ /* Just ignore */    }
 {S_COMMENT}			{ /* Just ignore */    }
 
-	// 识别关键字的规则
+	// Keywords
 "void"				{ return keyword(Parser.VOID);			}
 "int"				{ return keyword(Parser.INT);			}
 "bool"				{ return keyword(Parser.BOOL);			}
@@ -65,7 +65,7 @@ WHITESPACE			= ([ \t]+)
 "static"			{ return keyword(Parser.STATIC);		}
 "instanceof"		{ return keyword(Parser.INSTANCEOF);	}
 
-	// 识别操作符的规则
+	// Operators
 "<="				{ return operator(Parser.LESS_EQUAL);	}
 ">="				{ return operator(Parser.GREATER_EQUAL);}
 "=="				{ return operator(Parser.EQUAL);		}
@@ -74,7 +74,7 @@ WHITESPACE			= ([ \t]+)
 "||"				{ return operator(Parser.OR);			}
 {SIMPLE_OPERATOR}	{ return operator(yycharat(0));			}
 
-	// 识别常数的规则
+	// Constants
 "true"				{ return boolConst(true);										}
 "false"				{ return boolConst(false);										}
 {INTEGER}			{ return intConst(yytext());			}
@@ -92,8 +92,8 @@ WHITESPACE			= ([ \t]+)
 <S>"\\\\"			{ buffer.append('\\'); 											}
 <S>.				{ buffer.append(yytext()); 										}
 
-	// 识别标识符的规则
+	// Identifier
 {IDENTIFIER}		{ return identifier(yytext());			}
 
-	// 上面规则不能识别的字符怎么处理
+	// Others
 .					{ issueError(new UnrecogCharError(getLocation(), yycharat(0))); 		}
