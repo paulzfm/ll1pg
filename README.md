@@ -1,10 +1,10 @@
 # LL1-Parser-Gen
 
-A LL(1) Parser Generator. This tool automatically generate a parser class written in Java that
+LL(1) Parser Generator that automatically generate a parser class written in Java which
 satisfies the context-free grammar (CFG) written as a specification file. The parse engine is
 based on LL(1) parsing technique, from top to bottom.
 
-This tool will become a part of the decaf project for the undergraduate course Principles of
+LL1-Parser-Gen will become a part of the decaf project for the undergraduate course Principles of
 Compilation, Tsinghua University.
 
 ### Build
@@ -40,8 +40,8 @@ type
 java -jar pg.jar [-strict] <spec file> <output file>
 ```
 
-to generate the target parser `<output file>` from your `<spec file>`. Open the option `-strict` if
-you want to generate in [strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
+to generate the target parser `<output file>` from your `<spec file>`. Open the option `-strict` to 
+run in [strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
 
 We strongly recommend you to read our [wiki](https://github.com/paulzfm/LL1-Parser-Gen/wiki) before
 using the tool.
@@ -53,5 +53,5 @@ demo projects [arith](https://github.com/paulzfm/LL1-Parser-Gen/tree/master/demo
 implements a simple calculator, and
 [decaf](https://github.com/paulzfm/LL1-Parser-Gen/tree/master/demos/decaf), a Java-like language parser.
 
-To build these projects, under the project root directory, type `ant` to build (make sure you have
-installed the `ant` tool). And the target jar file will be located at `result/` folder.
+To build these projects, under the demo project root directory, type `ant` to build (make sure you have
+installed the `ant` tool). The target jar file will be generated at `result/` folder.
