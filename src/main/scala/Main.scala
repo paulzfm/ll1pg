@@ -10,7 +10,10 @@ object Main {
     var outputFile = ""
     var strictMode = false
 
-    if (args(0) == "-strict") {
+    if (args.length == 0) {
+      Console.err.println(s"Usage: java -jar pg.jar [-strict] <spec file> <output file>")
+      System.exit(1)
+    } else if (args(0) == "-strict") {
       if (args.length >= 3) {
         specFile = args(1)
         outputFile = args(2)
