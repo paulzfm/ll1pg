@@ -1,8 +1,11 @@
 /* This is auto-generated Parser source by LL1-Parser-Gen.
- * Generated at: Sat Aug 05 22:31:08 CST 2017
+ * Specification file: /Users/paul/Workspace/LL1-Parser-Gen/demos/decaf/src/decaf/Parser.spec
+ * Options: unstrict mode
+ * Generated at: Tue Aug 08 14:14:52 CST 2017
  * Please do NOT modify it!
  *
  * Project repository: https://github.com/paulzfm/LL1-Parser-Gen
+ * Version: 1.0
  * Author: Zhu Fengmin (Paul)
  */
 
@@ -15,9 +18,9 @@ import java.util.*;
 
 public class Parser extends BaseParser
  {
-    public static final int eof = -1;
-    public static final int eos = 0;
-    public int lookahead = -1;
+    private static final int eof = -1;
+    private static final int eos = 0;
+    private int lookahead = -1;
     public SemValue val = new SemValue();
     
     /* tokens */
@@ -51,7 +54,7 @@ public class Parser extends BaseParser
     public static final int NOT_EQUAL = 284; //# line 19
     
     /* search token name */
-    String[] tokens = {
+    private String[] tokens = {
         "VOID", "BOOL", "INT", "STRING", "CLASS",
         "NULL", "EXTENDS", "THIS", "WHILE", "FOR",
         "IF", "ELSE", "RETURN", "BREAK", "NEW",
@@ -79,7 +82,7 @@ public class Parser extends BaseParser
         return result;
     }
     
-    public SemValue matchToken(int expected) throws Exception {
+    private SemValue matchToken(int expected) throws Exception {
         SemValue self = val;
         if (lookahead == expected) {
             lookahead = lex();

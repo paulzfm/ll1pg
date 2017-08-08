@@ -78,10 +78,4 @@ public abstract class BaseLexer {
         return Parser.IDENTIFIER;
     }
 
-    public void diagnose() throws IOException {
-        while (yylex() != 0) {
-            System.out.println(parser.lookahead);
-        }
-    }
-
 }

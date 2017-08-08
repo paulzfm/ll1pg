@@ -4,8 +4,8 @@ LL(1) Parser Generator that automatically generate a parser class written in Jav
 satisfies the context-free grammar (CFG) written as a specification file. The parse engine is
 based on LL(1) parsing technique, from top to bottom.
 
-LL1-Parser-Gen will become a part of the decaf project for the undergraduate course Principles of
-Compilation, Tsinghua University.
+LL1-Parser-Gen will become a part of the decaf project for the undergraduate course _Principles of
+Compilation_, Tsinghua University.
 
 ### Build
 
@@ -32,19 +32,15 @@ and you will find the target jar at `target/scala-2.12/LL1-Parser-Gen-assembly-1
 
 ### Usage
 
-After preparing your
-[specification file](https://github.com/paulzfm/LL1-Parser-Gen/wiki/1.-Specification-File),
-type
-
 ```
 java -jar pg.jar [-strict] <spec file> <output file>
 ```
 
-to generate the target parser `<output file>` from your `<spec file>`. Open the option `-strict` to 
-run in [strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
+Generate the target parser `<output file>` from your `<spec file>`. The definition of specification
+file is [here](https://github.com/paulzfm/LL1-Parser-Gen/wiki/1.-Specification-File). Open the
+option `-strict` to run in [strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
 
-We strongly recommend you to read our [wiki](https://github.com/paulzfm/LL1-Parser-Gen/wiki) before
-using the tool.
+We strongly recommend you to read our [wiki](https://github.com/paulzfm/LL1-Parser-Gen/wiki) first.
 
 ### Demo Projects
 
@@ -53,5 +49,6 @@ demo projects [arith](https://github.com/paulzfm/LL1-Parser-Gen/tree/master/demo
 implements a simple calculator, and
 [decaf](https://github.com/paulzfm/LL1-Parser-Gen/tree/master/demos/decaf), a Java-like language parser.
 
-To build these projects, under the demo project root directory, type `ant` to build (make sure you have
-installed the `ant` tool). The target jar file will be generated at `result/` folder.
+To build these projects, first run `sbt assembly` to build LL1-Parser-Gen as a jar. Then under each
+demo project root directory, type `ant` to build (make sure you have installed the `ant` tool).
+The target jar file will be generated at `result/` folder.

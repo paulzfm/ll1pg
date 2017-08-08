@@ -1,3 +1,5 @@
+import java.io.File
+
 import scala.util.{Failure, Success, Try}
 
 /**
@@ -6,8 +8,8 @@ import scala.util.{Failure, Success, Try}
 object Main {
   def main(args: Array[String]): Unit = {
     // Parse command line option and arguments.
-    var specFile = ""
-    var outputFile = ""
+    var specFileName = ""
+    var parserFileName = ""
     var strictMode = false
 
     if (args.length == 0) {
@@ -15,16 +17,16 @@ object Main {
       System.exit(1)
     } else if (args(0) == "-strict") {
       if (args.length >= 3) {
-        specFile = args(1)
-        outputFile = args(2)
+        specFileName = args(1)
+        parserFileName = args(2)
         strictMode = true
       } else {
         Console.err.println(s"Usage: java -jar pg.jar [-strict] <spec file> <output file>")
         System.exit(1)
       }
     } else if (args.length == 2) {
-      specFile = args(0)
-      outputFile = args(1)
+      specFileName = args(0)
+      parserFileName = args(1)
     } else if (args.length == 3) {
       Console.err.println(s"Invalid option: ${args(0)}")
       System.exit(1)
@@ -34,13 +36,16 @@ object Main {
     }
 
     // Read specification file.
-    val source = scala.io.Source.fromFile(specFile)
+    val inputFile = new File(specFileName)
+    val source = scala.io.Source.fromFile(inputFile)
     val lines = try source.mkString finally source.close()
+
+    val outputFile = new File(parserFileName)
 
     // Parse and generate.
     def parseAndGenerate(source: String): Try[Unit] = for {
       spec <- Parsers.parse(source)
-      gen = new Generator(spec, strictMode)
+      gen = new Generator(spec, inputFile.getAbsolutePath, strictMode)
       code <- gen.generate
     } yield {
       val writer = new IndentWriter
@@ -50,7 +55,8 @@ object Main {
 
     parseAndGenerate(lines) match {
       case Success(_) =>
-        println(s"""Parser is successfully generated and written to "$outputFile".""")
+        println("Parser is successfully generated and written to \"" +
+          outputFile.getAbsolutePath + "\"")
       case Failure(ex) =>
         Console.err.println(ex.getMessage)
         System.exit(1)

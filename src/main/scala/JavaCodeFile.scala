@@ -30,11 +30,16 @@ import Utils._
   * @param start    starting symbol of CFG, used as the parser entry.
   * @param tokens   tokens (or terminals), will be obtained from the lexer.
   * @param parsers  all non-terminal parsers.
+  * @param specFile input specification file name.
+  * @param options  custom options.
   */
 class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
                    val semValue: SemValue, val start: NonTerminal,
                    val tokens: List[Token],
-                   val parsers: List[NonTerminalParser]) extends Printable {
+                   val parsers: List[NonTerminalParser],
+                   val specFile: String, val options: String) extends Printable {
+  val version: String = "1.0"
+
   override def printTo(writer: IndentWriter): Unit = {
     // Print info.
     printInfoTo(writer)
@@ -52,9 +57,9 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.incIndent()
 
     // Print yy variables.
-    writer.writeLn("public static final int eof = -1;")
-    writer.writeLn("public static final int eos = 0;")
-    writer.writeLn("public int lookahead = -1;")
+    writer.writeLn("private static final int eof = -1;")
+    writer.writeLn("private static final int eos = 0;")
+    writer.writeLn("private int lookahead = -1;")
     writer.writeLn(s"public $semValue val = new $semValue();")
     writer.writeLn()
 
@@ -67,7 +72,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     }
     writer.writeLn()
     writer.writeLn("/* search token name */")
-    writer.writeLn("String[] tokens = {")
+    writer.writeLn("private String[] tokens = {")
     writer.incIndent()
     identTokens.grouped(5).foreach {
       grp =>
@@ -103,10 +108,13 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
 
   private def printInfoTo(writer: IndentWriter): Unit = {
     writer.writeLn("/* This is auto-generated Parser source by LL1-Parser-Gen.")
+    writer.writeLn(s" * Specification file: $specFile")
+    writer.writeLn(s" * Options: $options")
     writer.writeLn(s" * Generated at: ${Calendar.getInstance.getTime}")
     writer.writeLn(" * Please do NOT modify it!")
     writer.writeLn(" *")
     writer.writeLn(" * Project repository: https://github.com/paulzfm/LL1-Parser-Gen")
+    writer.writeLn(s" * Version: $version")
     writer.writeLn(" * Author: Zhu Fengmin (Paul)")
     writer.writeLn(" */")
   }
@@ -147,7 +155,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
   }
 
   private def printFuncMatchTokenTo(writer: IndentWriter): Unit = {
-    writer.writeLn(s"public $semValue matchToken(int expected) throws Exception {")
+    writer.writeLn(s"private $semValue matchToken(int expected) throws Exception {")
     writer.incIndent()
     writer.writeLn(s"$semValue self = val;")
     writer.writeLn("if (lookahead == expected) {")

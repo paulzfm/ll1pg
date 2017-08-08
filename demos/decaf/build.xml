@@ -6,7 +6,7 @@
     <property name="bin.dir" value="${result.dir}/bin"/>
     <property name="doc.dir" value="${result.dir}/doc"/>
     <property name="jflex.jar" value="../tools/JFlex.jar"/>
-    <property name="pg.jar" value="../tools/pg.jar"/>
+    <property name="pg.jar" value="../../target/scala-2.12/LL1-Parser-Gen-assembly-1.0.jar"/>
 
     <target name="prepare" description="Preparing...">
         <mkdir dir="${bin.dir}"/>

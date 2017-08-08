@@ -83,10 +83,9 @@ class IndentWriter(val indent: Int = 4, val endOfLine: String = "\n") {
   /**
     * Output buffer to file.
     *
-    * @param path output file path.
+    * @param file output file.
     */
-  def outputToFile(path: String): Unit = {
-    val file = new File(path)
+  def outputToFile(file: File): Unit = {
     val bw = new BufferedWriter(new FileWriter(file))
     bw.write(buffer)
     bw.close()

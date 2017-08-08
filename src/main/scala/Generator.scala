@@ -11,10 +11,11 @@ import scala.util.{Failure, Success, Try}
   * Parsers will be constructed according to the Predictive Set.
   *
   * @param spec       specification illustrating the CFG.
+  * @param file       specification file name.
   * @param strictMode option to decide whether assuming the CFG is strictlly LL(1) grammar,
   *                   default value closed.
   */
-class Generator(spec: Spec, strictMode: Boolean = false) {
+class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = false) {
   /**
     * Map non-terminals to their corresponding rules.
     */
@@ -261,7 +262,8 @@ class Generator(spec: Spec, strictMode: Boolean = false) {
         }
         NonTerminalParser(spec.sem, nt, cases)
     }
-    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers)
+    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers,
+      file, if (strictMode) "strict mode" else "unstrict mode")
   }
 
   /**
