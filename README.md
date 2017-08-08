@@ -30,6 +30,8 @@ sbt assembly
 
 and you will find the target jar at `target/scala-2.12/LL1-Parser-Gen-assembly-1.0.jar`.
 
+The latest pre-build jar can be found [here](https://github.com/paulzfm/LL1-Parser-Gen/files/1207057/pg-1.0.zip).
+
 ### Usage
 
 ```
