@@ -1,7 +1,7 @@
 # LL1-Parser-Gen
 
-LL(1) Parser Generator that automatically generate a parser class written in Java which
-satisfies the context-free grammar (CFG) written as a specification file. The parse engine is
+LL(1) Parser Generator that automatically generates a parser class written in Java which
+satisfies the context-free grammar (CFG) given as a specification file. The parse engine is
 based on LL(1) parsing technique, from top to bottom.
 
 LL1-Parser-Gen will become a part of the decaf project for the undergraduate course _Principles of
@@ -38,9 +38,12 @@ The latest pre-build jar can be found [here](https://github.com/paulzfm/LL1-Pars
 java -jar pg.jar [-strict] <spec file> <output file>
 ```
 
-Generate the target parser `<output file>` from your `<spec file>`. The definition of specification
-file is [here](https://github.com/paulzfm/LL1-Parser-Gen/wiki/1.-Specification-File). Open the
-option `-strict` to run in [strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
+where `<output file>` is the destination for the generated parser, and `<spec file>` is the
+path of the specification file. See
+[here](https://github.com/paulzfm/LL1-Parser-Gen/wiki/1.-Specification-File)
+for the definition of specification file.
+Enable option `-strict` to run in
+[strict mode](https://github.com/paulzfm/LL1-Parser-Gen/wiki/2.-Strict-Mode).
 
 We strongly recommend you to read our [wiki](https://github.com/paulzfm/LL1-Parser-Gen/wiki) first.
 
