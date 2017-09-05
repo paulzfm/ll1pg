@@ -57,9 +57,9 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class,
     writer.incIndent()
 
     // Print yy variables.
-    writer.writeLn("private static final int eof = -1;")
-    writer.writeLn("private static final int eos = 0;")
-    writer.writeLn("private int lookahead = -1;")
+    writer.writeLn("public static final int eof = -1;")
+    writer.writeLn("public static final int eos = 0;")
+    writer.writeLn("public int lookahead = -1;")
     writer.writeLn(s"public $semValue val = new $semValue();")
     writer.writeLn()
 
