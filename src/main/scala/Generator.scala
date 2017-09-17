@@ -253,17 +253,16 @@ class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = fal
     * @param ps a list presenting predictive sets.
     * @return Java code.
     */
-  def generateCode(ps: PS): JavaCodeFile = {
+  def generateCode(first: HashTable, follow: HashTable, ps: PS): JavaCodeFile = {
     val parsers = ps.map {
       case (nt, tb) =>
         val codeMap = rulesMap(nt).flatMap(_.rights).toMap
         val cases = tb.map {
           case (s, terms) => (terms.toList, s, codeMap(s))
         }
-        NonTerminalParser(spec.sem, nt, cases)
+        NonTerminalPSTable(nt, cases)
     }
-    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers,
-      file, if (strictMode) "strict mode" else "unstrict mode")
+    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, rulesMap.keys.toList, follow, parsers, file, if (strictMode) "strict mode" else "unstrict mode")
   }
 
   /**
@@ -278,13 +277,13 @@ class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = fal
     val ps = computePredictiveSet(first, follow)
     if (strictMode) {
       checkLL1(ps) match {
-        case None => Success(generateCode(ps))
+        case None => Success(generateCode(first, follow, ps))
         case Some((l, x, sx, y, sy)) =>
           Failure(Error(s"not LL(1) grammar:\n" +
             s"PS($l -> ${listToString(x)}) = ${setToString(sx)},\n" +
             s"PS($l -> ${listToString(y)}) = ${setToString(sy)},\n" +
             s"but their intersection is non empty", l.symbol.pos))
       }
-    } else Success(generateCode(transformLL1(ps)))
+    } else Success(generateCode(first, follow, transformLL1(ps)))
   }
 }

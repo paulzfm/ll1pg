@@ -69,10 +69,7 @@ object Parsers {
 
     def semValue: Parser[SemValue] = positioned("%sem" ~> ident ^^ SemValue)
 
-    def cls: Parser[Class] = positioned(
-      "%class" ~> ident ~ ("extends" ~> ident) ~ ("implements" ~> ident.+).? ^^ {
-        case c ~ e ~ is => Class(c, e, is)
-      })
+    def cls: Parser[Class] = positioned("%class" ~> ident ^^ Class)
 
     def start: Parser[Start] = positioned("%start" ~> ident ^^ (NonTerminal andThen Start))
 

@@ -91,8 +91,7 @@ object SpecAST {
   def Spec(headers: (Tokens, Start), rules: List[Rule]): Spec = {
     val (tokens, start) = headers
     Spec(
-      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident(""), Ident("")),
-        tokens, start),
+      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident("")), tokens, start),
       rules
     )
   }
@@ -130,18 +129,10 @@ object SpecAST {
   /**
     * Class for the parser.
     *
-    * @param name       identifier presenting the name of the class.
-    * @param superClass identifier presenting the name of the super class.
-    * @param implements identifiers presenting the name of inherited interfaces, optional.
+    * @param name identifier presenting the name of the class.
     */
-  case class Class(name: Ident, superClass: Ident,
-                   implements: Option[List[Ident]] = None) extends Header {
-    override def toString: String = s"public class $name extends $superClass${
-      implements match {
-        case Some(is) => "implements " + is.mkString(", ")
-        case None => ""
-      }
-    }"
+  case class Class(name: Ident) extends Header {
+    override def toString: String = s"public class $name"
   }
 
   /**
