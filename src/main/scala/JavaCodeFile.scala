@@ -150,8 +150,10 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class, val s
 
     writer.writeLn("private final Integer[][] followRaw = {")
     writer.incIndent()
-    follow.values.foreach {
-      s => writer.writeLn(s"{${s.toList.map(_.toJavaCode).mkString(", ")}},")
+    symbols.foreach {
+      s =>
+        val set = follow(List(s))
+        writer.writeLn(s"{${set.toList.map(_.toJavaCode).mkString(", ")}},")
     }
     writer.decIndent()
     writer.writeLn("};")
