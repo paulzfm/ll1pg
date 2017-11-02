@@ -157,4 +157,21 @@ class TestParsers extends FunSuite {
       case p.Failure(msg, _) => System.err.println(msg)
     }
   }
+
+  test ("parse rule with undefined token: '^'") {
+    val tokens = List('+', '-').map(ConstToken)
+    val code =
+      """expr : expr '+' expr
+        >     | expr '-' expr
+        >     | expr '^' expr
+      """.stripMargin('>')
+    val p = new RuleParser(tokens)
+
+    val r = p.parseAll(p.rule, code)
+
+    assert(r.isEmpty)
+    r match {
+      case p.Error(msg, _) => System.err.println(msg)
+    }
+  }
 }

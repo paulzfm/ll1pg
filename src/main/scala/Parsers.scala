@@ -93,11 +93,11 @@ object Parsers {
       p.parse(p.token, in) match {
         case p.Success(token: Token, next) => token match {
           case IdentToken(t) =>
-            if (tokens.contains(token)) Success(Terminal(token), next)
-            else Success(NonTerminal(t), next)
+            val r = if (tokens.contains(token)) Terminal(token) else NonTerminal(t)
+            Success(r, next)
           case ConstToken(_) =>
             if (tokens.contains(token)) Success(Terminal(token), next)
-            else Failure(s"undefined token: $token", in)
+            else Error(s"undefined token: $token", in)
         }
         case p.Error(msg, next) => Error(msg, next)
         case p.Failure(msg, next) => Failure(msg, next)
