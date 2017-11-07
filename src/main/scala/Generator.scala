@@ -257,8 +257,13 @@ class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = fal
     val parsers = ps.map {
       case (nt, tb) =>
         val codeMap = rulesMap(nt).flatMap(_.rights).toMap
-        val cases = tb.map {
-          case (s, terms) => (terms.toList, s, codeMap(s))
+        val cases = tb.flatMap {
+          case (s, terms) if terms.isEmpty =>
+            Console.err.println("Warning: unreachable production:")
+            Console.err.println(s"$nt -> ${listToString(s)}")
+            Console.err.println("predictive set is empty")
+            None
+          case (s, terms) => Some((terms.toList, s, codeMap(s)))
         }
         NonTerminalPSTable(nt, cases)
     }
