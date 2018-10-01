@@ -204,7 +204,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class, val s
       |  * If the corresponding term is undefined in the table, `null` will be returned.
       |  */
     """.stripMargin.split('\n').foreach(writer.writeLn)
-    writer.writeLn(s"public Pair<Integer, List<Integer>> query(int nonTerminal, int lookahead) {")
+    writer.writeLn(s"public Map.Entry<Integer, List<Integer>> query(int nonTerminal, int lookahead) {")
     writer.incIndent()
     writer.writeLn("switch (nonTerminal) {")
     writer.incIndent()
@@ -224,7 +224,7 @@ class JavaCodeFile(val pkg: Package, val imports: Imports, val cls: Class, val s
               case Term(t) => writer.writeLn(s"case $t:")
             }
             writer.incIndent()
-            writer.writeLn(s"return new Pair<>(${codePosMap(c.pos)}, Arrays.asList" +
+            writer.writeLn(s"return new AbstractMap.SimpleEntry<>(${codePosMap(c.pos)}, Arrays.asList" +
               s"(${sentenceToJavaSeq(s)}));")
             writer.decIndent()
         }
