@@ -13,6 +13,10 @@
 
 %package arith
 %import
+arith.Expr
+arith.Expr.*
+arith.error.CompileError
+java.util.*
 %class public class Parser extends BaseParser
 %sem SemValue
 %start E

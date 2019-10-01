@@ -9,7 +9,7 @@
 
 %package ambig
 %import
-%class Parser extends BaseParser
+%class public class Parser extends BaseParser
 %sem SemValue
 %start E
 
