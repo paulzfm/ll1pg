@@ -1,6 +1,6 @@
 # LL1-Parser-Gen
 
-LL(1) Parser Generator that automatically generates a parser class written in Java which
+LL(1) Parser decaf.tools.pg.Generator that automatically generates a parser class written in Java which
 satisfies the context-free grammar (CFG) given as a specification file. The parse engine is
 based on LL(1) parsing technique, from top to bottom.
 

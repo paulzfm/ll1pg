@@ -1,6 +1,6 @@
-name := "LL1-Parser-Gen"
+name := "ll1-pg"
 
-version := "1.0"
+version := "decaf-course-19-fall"
 
 scalaVersion := "2.12.1"
 
