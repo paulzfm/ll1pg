@@ -1,4 +1,4 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
 import java.io.File
 import java.nio.file.Paths

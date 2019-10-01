@@ -1,0 +1,24 @@
+plugins {
+    id 'scala'
+}
+
+version = 'v2019.1.1'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.scala-lang.modules', name: 'scala-parser-combinators_2.12', version: '1.0.5'
+
+    testImplementation group: 'org.scalatest', name: 'scalatest_2.12', version: '3.0.1'
+    testImplementation group: 'junit', name: 'junit', version: '4.10'
+}
+
+task spec(dependsOn: ['testClasses'], type: JavaExec) {
+    main = 'org.scalatest.tools.Runner'
+    args = ['-R', 'build/classes/scala/test', '-o']
+    classpath = sourceSets.test.runtimeClasspath
+}

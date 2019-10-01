@@ -1,6 +1,6 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
-import decaf.tools.pg.SpecAST.{Class, Const, ConstToken, Header, Headers, Ident, IdentToken, Imports, JavaCode, NonTerminal, OutputFile, Package, Rule, SemValue, Spec, Start, Term, Terminal, Token, Tokens}
+import decaf.tools.ll1pg.SpecAST.{Class, Const, ConstToken, Header, Headers, Ident, IdentToken, Imports, JavaCode, NonTerminal, OutputFile, Package, Rule, SemValue, Spec, Start, Term, Terminal, Token, Tokens}
 
 import scala.util.matching.Regex
 import scala.util.parsing.combinator.RegexParsers

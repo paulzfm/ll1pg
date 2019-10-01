@@ -1,7 +1,7 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
-import decaf.tools.pg.Parsers.RuleParser
-import decaf.tools.pg.SpecAST._
+import decaf.tools.ll1pg.Parsers.RuleParser
+import decaf.tools.ll1pg.SpecAST._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

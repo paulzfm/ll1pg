@@ -1,6 +1,6 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
-import decaf.tools.pg.SpecAST._
+import decaf.tools.ll1pg.SpecAST._
 
 import scala.collection.mutable
 

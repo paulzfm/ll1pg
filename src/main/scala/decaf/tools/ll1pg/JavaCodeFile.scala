@@ -1,9 +1,9 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
 import java.util.Calendar
 
-import decaf.tools.pg.SpecAST.{Class, Imports, NonTerminal, Package, SemValue, Token}
-import decaf.tools.pg.Utils._
+import decaf.tools.ll1pg.SpecAST.{Class, Imports, NonTerminal, Package, SemValue, Token}
+import decaf.tools.ll1pg.Utils._
 
 import scala.util.parsing.input.NoPosition
 

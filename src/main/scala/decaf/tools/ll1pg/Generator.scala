@@ -1,8 +1,8 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
-import decaf.tools.pg.Parsers.Error
-import decaf.tools.pg.SpecAST._
-import decaf.tools.pg.Utils._
+import decaf.tools.ll1pg.Parsers.Error
+import decaf.tools.ll1pg.SpecAST._
+import decaf.tools.ll1pg.Utils._
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}

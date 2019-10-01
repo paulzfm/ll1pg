@@ -1,7 +1,7 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
-import decaf.tools.pg.SpecAST.{NonTerminal, _}
-import decaf.tools.pg.Utils._
+import decaf.tools.ll1pg.SpecAST.{NonTerminal, _}
+import decaf.tools.ll1pg.Utils._
 import org.junit.runner.RunWith
 import org.scalatest.FunSuite
 import org.scalatest.junit.JUnitRunner

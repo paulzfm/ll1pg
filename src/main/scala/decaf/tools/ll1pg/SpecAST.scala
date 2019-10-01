@@ -1,4 +1,4 @@
-package decaf.tools.pg
+package decaf.tools.ll1pg
 
 import scala.util.parsing.input.Positional
 
