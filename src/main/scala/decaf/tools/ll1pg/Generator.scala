@@ -1,23 +1,19 @@
 package decaf.tools.ll1pg
 
-import decaf.tools.ll1pg.Parsers.Error
 import decaf.tools.ll1pg.SpecAST._
 import decaf.tools.ll1pg.Utils._
 
 import scala.collection.mutable
-import scala.util.{Failure, Success, Try}
 
 /**
   * Parser generator from the specification defined with `AST`.
   * This generator implements the algorithms to compute First Set, Follow Set and Predictive Set.
   * Parsers will be constructed according to the Predictive Set.
   *
-  * @param spec       specification illustrating the CFG.
-  * @param file       specification file name.
-  * @param strictMode option to decide whether assuming the CFG is strictlly LL(1) grammar,
-  *                   default value closed.
+  * @param spec specification illustrating the CFG.
+  * @param file specification file name.
   */
-class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = false) {
+class Generator(spec: Spec, file: String = "<string>") {
   /**
     * Map non-terminals to their corresponding rules.
     */
@@ -212,12 +208,14 @@ class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = fal
     }
 
   /**
-    * In unstrict mode, if the given grammar is not LL(1), we reduce conflicts by specifying the
-    * precedence of the production being used.
+    * If the given grammar is not LL(1), we reduce conflicts by specifying the precedence of the
+    * production being used.
     *
     * For example, grammar G[S]:
-    * - S -> if C t S E
-    * - E -> e S | `epsilon`
+    * {{{
+    *   S -> if C t S E
+    *   E -> e S | `epsilon`
+    * }}}
     * is not LL(1), because PS(E -> e S) & PS(E -> `epsilon`) = {E} is non-empty.
     * By always selecting `E -> e S` when `E` is the lookahead symbol, we solve the conflicts
     * and substitute the new predictive set PS'(E -> `epsilon`) by PS(E -> `epsilon`) - {E},
@@ -250,47 +248,46 @@ class Generator(spec: Spec, file: String = "<string>", strictMode: Boolean = fal
   }
 
   /**
-    * Generate target code, i.e. the LL(1) parser, from predictive sets.
+    * Generate target LL table.
     *
-    * @param ps a list presenting predictive sets.
-    * @return Java code.
+    * @return Java LL table.
     */
-  def generateCode(first: HashTable, follow: HashTable, ps: PS): JavaCodeFile = {
-    val parsers = ps.map {
+  def generateTable: JavaTable = {
+    val first = computeFirstSet
+    val follow = computeFollowSet(first)
+    val ps = computePredictiveSet(first, follow)
+    val ps1 = transformLL1(ps)
+
+    val parsers = ps1.map {
       case (nt, tb) =>
         val codeMap = rulesMap(nt).flatMap(_.rights).toMap
         val cases = tb.flatMap {
-          case (s, terms) if terms.isEmpty =>
-            Console.err.println("Warning: unreachable production:")
-            Console.err.println(s"$nt -> ${listToString(s)}")
-            Console.err.println("predictive set is empty")
-            None
           case (s, terms) => Some((terms.toList, s, codeMap(s)))
         }
         NonTerminalPSTable(nt, cases)
     }
-    new JavaCodeFile(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, rulesMap.keys.toList, follow, parsers, file, if (strictMode) "strict mode" else "unstrict mode")
+    new JavaTable(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, rulesMap.keys.toList, follow, parsers, file)
   }
 
   /**
-    * The explicitly interface that wraps all the necessary steps.
-    * Always call this instead of manually calling the above algorithms.
+    * Generate target LL parser.
     *
-    * @return the target parser.
+    * @return Java parser.
     */
-  def generate: Try[JavaCodeFile] = {
+  def generateParser: JavaParser = {
     val first = computeFirstSet
     val follow = computeFollowSet(first)
     val ps = computePredictiveSet(first, follow)
-    if (strictMode) {
-      checkLL1(ps) match {
-        case None => Success(generateCode(first, follow, ps))
-        case Some((l, x, sx, y, sy)) =>
-          Failure(Error(s"not LL(1) grammar:\n" +
-            s"PS($l -> ${listToString(x)}) = ${setToString(sx)},\n" +
-            s"PS($l -> ${listToString(y)}) = ${setToString(sy)},\n" +
-            s"but their intersection is non empty", l.symbol.pos))
-      }
-    } else Success(generateCode(first, follow, transformLL1(ps)))
+    val ps1 = transformLL1(ps)
+
+    val parsers = ps1.map {
+      case (nt, tb) =>
+        val codeMap = rulesMap(nt).flatMap(_.rights).toMap
+        val cases = tb.map {
+          case (s, terms) => (terms.toList, s, codeMap(s))
+        }
+        NonTerminalParser(spec.sem, nt, cases)
+    }
+    new JavaParser(spec.pkg, spec.imports, spec.cls, spec.sem, spec.start, spec.tokens, parsers, file)
   }
 }

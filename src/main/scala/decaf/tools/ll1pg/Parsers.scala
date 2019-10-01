@@ -190,7 +190,7 @@ object Parsers {
     *         - `Failure(ex)` if fails, and `ex` shows the error.
     */
   def parseRules(source: HeaderParsers#Input, headers: Headers): Try[List[Rule]] = {
-    val tokens = headers._6.tokens
+    val tokens = headers._5.tokens
     val p = new RuleParser(tokens)
     p.parseAll(p.rules, source) match {
       case p.Success(rules: List[Rule], _) => Success(rules)
@@ -221,10 +221,9 @@ object Parsers {
       h2 <- find[Imports](hds, x => x.isInstanceOf[Imports], "imports", "%import")
       h3 <- find[SemValue](hds, x => x.isInstanceOf[SemValue], "semantic value", "%sem")
       h4 <- find[Class](hds, x => x.isInstanceOf[Class], "class", "%class")
-      h5 <- find[OutputFile](hds, x => x.isInstanceOf[OutputFile], "output file path", "%output")
-      h6 <- find[Tokens](hds, x => x.isInstanceOf[Tokens], "tokens", "%tokens")
-      h7 <- find[Start](hds, x => x.isInstanceOf[Start], "start symbol", "%start")
-      headers = (h1, h2, h3, h4, h5, h6, h7)
+      h5 <- find[Tokens](hds, x => x.isInstanceOf[Tokens], "tokens", "%tokens")
+      h6 <- find[Start](hds, x => x.isInstanceOf[Start], "start symbol", "%start")
+      headers = (h1, h2, h3, h4, h5, h6)
       rules <- parseRules(next, headers)
       _ <- Try(checkNonTerminals(rules))
     } yield Spec(headers, rules)

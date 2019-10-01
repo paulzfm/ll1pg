@@ -61,7 +61,7 @@ object SpecAST {
   /**
     * Complete headers.
     */
-  type Headers = (Package, Imports, SemValue, Class, OutputFile, Tokens, Start)
+  type Headers = (Package, Imports, SemValue, Class, Tokens, Start)
 
   /**
     * Top level node presenting the whole specification.
@@ -78,11 +78,9 @@ object SpecAST {
 
     def cls: Class = headers._4
 
-    def output: OutputFile = headers._5
+    def tokens: List[Token] = headers._5.tokens
 
-    def tokens: List[Token] = headers._6.tokens
-
-    def start: NonTerminal = headers._7.symbol
+    def start: NonTerminal = headers._6.symbol
   }
 
   /**
@@ -95,7 +93,7 @@ object SpecAST {
   def Spec(headers: (Tokens, Start), rules: List[Rule]): Spec = {
     val (tokens, start) = headers
     Spec(
-      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident(""), ""), OutputFile(Ident("")), tokens, start),
+      (Package(Ident("")), Imports(Nil), SemValue(Ident("")), Class(Ident(""), ""), tokens, start),
       rules
     )
   }
