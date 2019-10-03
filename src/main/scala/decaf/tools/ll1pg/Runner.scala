@@ -6,6 +6,12 @@ import scala.util.{Failure, Success}
 
 object Runner {
 
+  /**
+    * Running configuration.
+    *
+    * @param inputSpec path of the input grammar file (*.spec)
+    * @param outputDir output path for generated Java code
+    */
   case class Config(inputSpec: Path, outputDir: Path)
 
   private def parse(config: Config): Option[Generator] = {
@@ -22,6 +28,11 @@ object Runner {
     }
   }
 
+  /**
+    * Only check if the input grammar is LL(1) (no code will be generated).
+    *
+    * @param config configuration
+    */
   def runGrammarCheck(config: Config): Unit = {
     parse(config).foreach {
       generator =>
@@ -29,6 +40,11 @@ object Runner {
     }
   }
 
+  /**
+    * Generate an LL(1) prediction table.
+    *
+    * @param config configuration
+    */
   def runTableGen(config: Config): Unit = {
     parse(config).foreach {
       generator =>
@@ -37,10 +53,15 @@ object Runner {
         table.printTo(writer)
         val outputFile = config.outputDir.resolve(table.cls.name + ".java").toFile
         writer.outputToFile(outputFile)
-        println("Table is successfully generated and written to \"" + outputFile + "\"")
+        println("Table is successfully generated and written to " + outputFile)
     }
   }
 
+  /**
+    * Generate a bare LL(1) parser (without any error recovery).
+    *
+    * @param config configuration
+    */
   def runParserGen(config: Config): Unit = {
     parse(config).foreach {
       generator =>
@@ -49,7 +70,7 @@ object Runner {
         parser.printTo(writer)
         val outputFile = config.outputDir.resolve(parser.cls.name + ".java").toFile
         writer.outputToFile(outputFile)
-        println("Parser is successfully generated and written to \"" + outputFile + "\"")
+        println("Parser is successfully generated and written to " + outputFile)
     }
   }
 }
