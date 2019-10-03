@@ -1,17 +1,18 @@
 # ll1pg
 
-A generator that automatically generates a parser class written in Java which
-satisfies the context-free grammar (CFG) given as a specification file. The parse engine is
-based on LL(1) parsing technique, from top to bottom.
+Yet another parser generation tool. 
+It can generate either a parser class or a LL prediction table in Java.
+The input specification file must specify a LL(1) grammar.
 
-LL1-Parser-Gen will become a part of the decaf project for the undergraduate course _Principles of
-Compilation_, Tsinghua University.
+This tool is now a part of the [decaf](https://github.com/decaf-lang/decaf) project for the undergraduate course 
+_Principles of Compilation_ in Tsinghua University.
 
 ### Build
 
-See release page for prebuilt jars.
+Prebuilt jars will be updated in the release page.
 
-If you want to build from source, simply type `gradle build`.
+To build from source, simply type `./gradlew build`.
+To assemble a standalone jar with all dependencies, type `./gradlew assembly` and you'll find it at `build/libs/`.
 
 ### Usage
 
@@ -27,14 +28,15 @@ The options mean:
 - `-table`: generate a LL predication table
 - `-check`: simply check if a grammar is LL(1), or else warnings will be reported
 
-See [here](https://github.com/paulzfm/LL1-Parser-Gen/wiki/1.-Specification-File) for the definition of specification file.
+See [here](https://github.com/paulzfm/ll1pg/wiki/1.-Specification-File) for the definition of specification file.
 And [here](https://github.com/paulzfm/ll1pg/wiki/2.-Resolving-Conflicts) for how we resolve conflicts
-even when your grammar is not LL(1). 
+even when your grammar is not LL(1).
 
-We strongly recommend you to read our [wiki](https://github.com/paulzfm/LL1-Parser-Gen/wiki) first.
+We strongly recommend you to read our [wiki](https://github.com/paulzfm/ll1pg/wiki) first.
 
 ### Demo Projects
 
 To integrate our tool with your project better, please take a closer look at our
-demo project [arith](https://github.com/paulzfm/LL1-Parser-Gen/tree/master/demos/arith), which
-implements a simple calculator, and [decaf](https://github.com/decaf-lang/decaf), a compiler for education.
+demo project [arith](https://github.com/paulzfm/ll1pg/tree/master/demos/arith), 
+which implements a simple calculator.
+Also, the [decaf](https://github.com/decaf-lang/decaf) project is a good practice.

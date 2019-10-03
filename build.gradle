@@ -35,7 +35,7 @@ task assembly(type: Jar) {
 
     from {
         configurations.compile.filter {
-            it.path.contains("scala")
+            it.path.contains('scala')
         }.collect {
             it.isDirectory() ? it : zipTree(it)
         }
